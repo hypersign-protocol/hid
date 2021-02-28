@@ -2,8 +2,10 @@
 pragma solidity >=0.6.2 <0.8.0;
 
 import "./interface/IERC20.sol";
+import "./libs/SafeMaths.sol";
 
 contract HID  is IERC20{
+    using SafeMath for uint256;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
     
@@ -48,8 +50,9 @@ contract HID  is IERC20{
     public 
     override
     returns (bool success){
-        balances[msg.sender] -= _value;
-        balances[_to] += _value;
+
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
         return true;
     }
@@ -62,9 +65,9 @@ contract HID  is IERC20{
     returns (bool success) {
         require(allowed[_from][msg.sender] >= _value, 'You are not allowed to transfer');
         
-        balances[_from] -= _value;
-        balances[_to] += _value;
-        allowed[_from][msg.sender] -= _value;
+        balances[_from] = balances[_from].sub(_value);
+        balances[_to] = balances[_to].add(_value);
+        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
         emit Transfer(_from, _to, _value);
         return true;
     }
