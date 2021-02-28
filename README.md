@@ -12,5 +12,5 @@ truffle compile
 ## Deploy
 
 ```
-truffle deploy
+truffle migrate --network development
 ```
