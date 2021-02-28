@@ -3,8 +3,8 @@ const HID = artifacts.require("HID");
 
 module.exports = function(deployer) {
     deployer.deploy(HID,
-        5000,
+        50000000,
         "Hypersign Token",
-        8,
+        18,
         "HID");
 };

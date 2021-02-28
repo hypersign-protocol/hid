@@ -9,8 +9,6 @@ contract HID  is IERC20{
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
     
-    /// Optional Variables
-    
     string public name;                   
     uint8 public decimals;                
     string public symbol;  
@@ -21,11 +19,11 @@ contract HID  is IERC20{
         string memory _tokenName,
         uint8 _decimals,
         string memory _tokenSymbol){
-            balances[msg.sender] = _totalSupply;
-            totalSupply = _totalSupply;
             name = _tokenName;
             symbol = _tokenSymbol;
             decimals = _decimals;
+            totalSupply = _totalSupply.mul((10 ** uint256(decimals)));
+            balances[msg.sender] = totalSupply;
     }
     
     modifier checkBalance(address _balanceOf, uint256 _value){
@@ -33,7 +31,7 @@ contract HID  is IERC20{
         _;
     }
     modifier checkAddress(address _addr){
-        require(_addr == address(0), 'Invalid address');
+        require(_addr != address(0), 'Invalid address');
         _;
     }
     
@@ -50,7 +48,6 @@ contract HID  is IERC20{
     public 
     override
     returns (bool success){
-
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
         emit Transfer(msg.sender, _to, _value);
@@ -64,7 +61,6 @@ contract HID  is IERC20{
     override
     returns (bool success) {
         require(allowed[_from][msg.sender] >= _value, 'You are not allowed to transfer');
-        
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
