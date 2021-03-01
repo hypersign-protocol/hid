@@ -1,6 +1,7 @@
 module.exports = {
-    TOTAL_SUPPLY = process.env.TOTAL_SUPPLY,
-    TOKEN_NAME = process.env.TOKEN_NAME,
-    TOKEN_SYMBOL = process.env.TOKEN_SYMBOL,
-    DECMALS = process.env.DECMALS
+    TOTAL_SUPPLY: 500000,
+    TOKEN_NAME: "Hypersign Token",
+    TOKEN_SYMBOL: "HID",
+    DECMALS: 8,
+    REACT_APP_INFURA_KEY: "c83edf15b6b344ae821087a8134cf1b8"
 }

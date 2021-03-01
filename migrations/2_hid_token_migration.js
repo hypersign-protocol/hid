@@ -1,10 +1,10 @@
 const HID = artifacts.require("HID");
-// const config = require('../config_txt')
+const config = require('../config')
 
 module.exports = function(deployer) {
     deployer.deploy(HID,
-        50000000,
-        "Hypersign Token",
-        18,
-        "HID");
+        config.TOTAL_SUPPLY,
+        config.TOKEN_NAME,
+        config.DECMALS,
+        config.TOKEN_SYMBOL);
 };
