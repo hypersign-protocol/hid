@@ -27,11 +27,11 @@ contract HID  is IERC20{
     }
     
     modifier checkBalance(address _balanceOf, uint256 _value){
-        require(balances[_balanceOf] >= _value, 'Insufficient balance');
+        require(balances[_balanceOf] >= _value, 'HIDERR: Insufficient balance');
         _;
     }
     modifier checkAddress(address _addr){
-        require(_addr != address(0), 'Invalid address');
+        require(_addr != address(0), 'HIDERR: Invalid address');
         _;
     }
     
@@ -56,11 +56,12 @@ contract HID  is IERC20{
     
     function transferFrom(address _from, address _to, uint256 _value) 
     checkBalance(_from, _value)
+    checkAddress(_from)
     checkAddress(_to)
     public 
     override
     returns (bool success) {
-        require(allowed[_from][msg.sender] >= _value, 'You are not allowed to transfer');
+        require(allowed[_from][msg.sender] >= _value, 'HIDERR: You are not allowed to transfer');
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
         allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
@@ -70,6 +71,7 @@ contract HID  is IERC20{
     
     function approve(address _spender, uint256 _value) 
     checkBalance(msg.sender, _value) 
+    checkAddress(_spender)
     public 
     override
     returns (bool success){
