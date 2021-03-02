@@ -4,41 +4,52 @@
 - Node version: `v13.12.0`
 - Truffle Version: `v5.2.0`
 
-## Run local blockchain
+## Setup Project
+
+### Private blockchain
 
 ```
-ganache-cli -m <mnemonics>
+ganache-cli -m <mnemonics>  # Run private blockchain network
 ```
 
-## setup
+### Setup repository
 
 ```
-npm i
+git clone https://github.com/Vishwas1/hid
+cd hid
+npm i # install required packages
 ```
 
-## compile
+## Compilation
+
 ```
 truffle compile
 ```
 
-## Deploy
+## Deployment
 
-### Developement 
+### Private Net
+
 ```
 truffle migrate --network development
 ```
 
-### Ropsten
+### TestNet: Ropsten
 
 ```
 INFURA_KEY=<your_infura_project_key> truffle migrate --network ropsten
 ```
 
-## Test
+## Testing
 
 ```
 truffle test
 ```
+
+### Report
+
+![img](./others/test_report_03022021.png)
+
 
 ## Deployed Contract
 
