@@ -8,7 +8,7 @@
 
 ### Private blockchain
 
-```
+```bash
 ganache-cli -m <mnemonics>  # Run private blockchain network
 ```
 
