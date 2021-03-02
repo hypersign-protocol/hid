@@ -14,15 +14,23 @@ ganache-cli -m <mnemonics>  # Run private blockchain network
 
 ### Setup repository
 
-```
+```bash
+# clone repo
 git clone https://github.com/Vishwas1/hid
+
+# change dir
 cd hid
-npm i # install required packages
+
+# install required packages
+npm i 
+
+# create file to store mnemonics
+echo "<mnemonics>" > .secret 
 ```
 
 ## Compilation
 
-```
+```bash
 truffle compile
 ```
 
@@ -30,19 +38,19 @@ truffle compile
 
 ### Private Net
 
-```
+```bash
 truffle migrate --network development
 ```
 
 ### TestNet: Ropsten
 
-```
+```bash
 INFURA_KEY=<your_infura_project_key> truffle migrate --network ropsten
 ```
 
 ## Testing
 
-```
+```bash
 truffle test
 ```
 
