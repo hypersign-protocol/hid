@@ -3,5 +3,5 @@ module.exports = {
     TOKEN_NAME: "Hypersign Identity Token",
     TOKEN_SYMBOL: "HID",
     DECIMALS: 18,
-    REACT_APP_INFURA_KEY: "c83edf15b6b344ae821087a8134cf1b8"
+    REACT_APP_INFURA_KEY: process.env.INFURA_KEY
 }
