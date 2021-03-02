@@ -1,3 +1,4 @@
 build
 .env
 .secret
+node_modules

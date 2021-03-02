@@ -1,19 +1,14 @@
 const HID = artifacts.require("HID");
 const config = require('../config');
-
-function formatBigNumber(number) {
-    try {
-        return number.toNumber() / Math.pow(10, config.DECMALS)
-    } catch {
-        return number / Math.pow(10, config.DECMALS)
-    }
-}
+const BigNumber = require('bignumber.js')
 
 function convertToken(amount) {
-    return amount * Math.pow(10, config.DECMALS);
+    amount = amount * Math.pow(10, config.DECIMALS)
+    return BigNumber(amount.toString());
 }
 
 contract("HID", accounts => {
+    const TOTALSUPPLY = BigNumber(config.TOTAL_SUPPLY * Math.pow(10, config.DECIMALS))
     const admin = accounts[0];
     const alice = accounts[1];
     const bob = accounts[2];
@@ -42,130 +37,135 @@ contract("HID", accounts => {
 
         it("totalSupply of token should be 50 million", async() => {
             instance = await HID.deployed();
-            let totalSupply = await instance.totalSupply();
-            totalSupply = formatBigNumber(totalSupply)
-            assert.equal(totalSupply, config.TOTAL_SUPPLY);
+            let totalSupply = BigNumber(await instance.totalSupply());
+            assert.equal(0, TOTALSUPPLY.comparedTo(totalSupply));
         });
 
         it("balance of admin should be 50 million", async() => {
             instance = await HID.deployed();
-            let balance = await instance.balanceOf(admin);
-            balance = formatBigNumber(balance)
-            assert.equal(balance, config.TOTAL_SUPPLY);
+            let balance = BigNumber(await instance.balanceOf(admin));
+            assert.equal(0, TOTALSUPPLY.comparedTo(balance));
         })
 
+
+
         it("admin should send 100 token to alice", async() => {
-            const amountToSpend = convertToken(100)
-            const aliceBalance_before = formatBigNumber(await instance.balanceOf(alice));
-            const admin_before = formatBigNumber(await instance.balanceOf(admin));
+            const amountToSpend = convertToken(100);
+
+            const aliceBalance_before = BigNumber(await instance.balanceOf(alice));
+            const admin_before = BigNumber(await instance.balanceOf(admin));
 
             await instance.transfer(alice, amountToSpend, { from: admin });
 
-            const aliceBalance_after = formatBigNumber(await instance.balanceOf(alice));
-            const admin_after = formatBigNumber(await instance.balanceOf(admin));
-
+            const aliceBalance_after = BigNumber(await instance.balanceOf(alice));
+            const admin_after = BigNumber(await instance.balanceOf(admin));
             assert.equal(
-                aliceBalance_after,
-                aliceBalance_before + formatBigNumber(amountToSpend),
+                0,
+                aliceBalance_after.comparedTo(aliceBalance_before.plus(amountToSpend)), // comparedTo return 0 if two bignumbers are same; Ref: https://mikemcl.github.io/bignumber.js/#cmp
                 "Amount wasn't correctly taken from the sender"
             )
 
             assert.equal(
-                admin_after,
-                admin_before - formatBigNumber(amountToSpend),
+                0,
+                admin_after.comparedTo(admin_before.minus(amountToSpend)),
                 "Amount wasn't correctly sent to the receiver"
             )
         })
+
 
         it("alice should send 10 token to bob", async() => {
             const amountToSpend = convertToken(10)
-            const aliceBalance_before = formatBigNumber(await instance.balanceOf(alice));
-            const bob_before = formatBigNumber(await instance.balanceOf(bob));
+            const aliceBalance_before = BigNumber(await instance.balanceOf(alice));
+            const bob_before = BigNumber(await instance.balanceOf(bob));
 
             await instance.transfer(bob, amountToSpend, { from: alice });
 
-            const aliceBalance_after = formatBigNumber(await instance.balanceOf(alice));
-            const bob_after = formatBigNumber(await instance.balanceOf(bob));
+            const aliceBalance_after = BigNumber(await instance.balanceOf(alice));
+            const bob_after = BigNumber(await instance.balanceOf(bob));
 
             assert.equal(
-                bob_after,
-                bob_before + formatBigNumber(amountToSpend),
+                0,
+                bob_after.comparedTo(bob_before.plus(amountToSpend)),
                 "Amount wasn't correctly taken from the sender"
             )
 
             assert.equal(
-                aliceBalance_after,
-                aliceBalance_before - formatBigNumber(amountToSpend),
+                0,
+                aliceBalance_after.comparedTo(aliceBalance_before.minus(amountToSpend)),
                 "Amount wasn't correctly sent to the receiver"
             )
         })
+
 
         it("alice should send 1.5 token to Dany", async() => {
             const amountToSpend = convertToken(10)
-            const aliceBalance_before = formatBigNumber(await instance.balanceOf(alice));
-            const bob_before = formatBigNumber(await instance.balanceOf(dany));
+            const aliceBalance_before = BigNumber(await instance.balanceOf(alice));
+            const bob_before = BigNumber(await instance.balanceOf(dany));
 
             await instance.transfer(dany, amountToSpend, { from: alice });
 
-            const aliceBalance_after = formatBigNumber(await instance.balanceOf(alice));
-            const bob_after = formatBigNumber(await instance.balanceOf(dany));
+            const aliceBalance_after = BigNumber(await instance.balanceOf(alice));
+            const bob_after = BigNumber(await instance.balanceOf(dany));
 
             assert.equal(
-                bob_after,
-                bob_before + formatBigNumber(amountToSpend),
+                0,
+                bob_after.comparedTo(bob_before.plus(amountToSpend)),
                 "Amount wasn't correctly taken from the sender"
             )
 
             assert.equal(
-                aliceBalance_after,
-                aliceBalance_before - formatBigNumber(amountToSpend),
+                0,
+                aliceBalance_after.comparedTo(aliceBalance_before.minus(amountToSpend)),
                 "Amount wasn't correctly sent to the receiver"
             )
         })
 
+
+
         it("bob should approve Tom to spend his 5 tokens", async() => {
             const amountToSpend = convertToken(5)
-            const allowance_before = formatBigNumber(await instance.allowance(bob, tom));
+            const allowance_before = BigNumber(await instance.allowance(bob, tom));
 
             await instance.approve(tom, amountToSpend, { from: bob });
-            const allowance_after = formatBigNumber(await instance.allowance(bob, tom));
+            const allowance_after = BigNumber(await instance.allowance(bob, tom));
             assert.equal(
-                allowance_after,
-                allowance_before + formatBigNumber(amountToSpend),
+                0,
+                allowance_after.comparedTo(allowance_before.plus(amountToSpend)),
                 "Could not approve tom"
             )
         })
 
+
         it("should overwrite the previous allowance", async() => {
-            const allowance_before = formatBigNumber(await instance.allowance(bob, tom));
-            const amountToSpend = convertToken(allowance_before + 1);
+            const allowance_before = BigNumber(await instance.allowance(bob, tom));
+            const amountToSpend = allowance_before.plus(1);
             await instance.approve(tom, amountToSpend, { from: bob });
-            const allowance_after = formatBigNumber(await instance.allowance(bob, tom));
+            const allowance_after = BigNumber(await instance.allowance(bob, tom));
             assert.equal(
-                allowance_after,
-                formatBigNumber(amountToSpend),
+                0,
+                allowance_after.comparedTo(amountToSpend),
                 "Could not approve tom"
             )
         })
 
         it("Tom should transfer 4 tokens of Bob to Charlie", async() => {
             const amountToSpend = convertToken(4);
-            const allowance_before = formatBigNumber(await instance.allowance(bob, tom));
-            const charleiBalance_before = formatBigNumber(await instance.balanceOf(charlie));
+            const allowance_before = BigNumber(await instance.allowance(bob, tom));
+            const charleiBalance_before = BigNumber(await instance.balanceOf(charlie));
             await instance.transferFrom(bob, charlie, amountToSpend, { from: tom });
-            const allowance_after = formatBigNumber(await instance.allowance(bob, tom));
+            const allowance_after = BigNumber(await instance.allowance(bob, tom));
 
-            const charleiBalance_after = formatBigNumber(await instance.balanceOf(charlie));
+            const charleiBalance_after = BigNumber(await instance.balanceOf(charlie));
 
             assert.equal(
-                allowance_after,
-                allowance_before - formatBigNumber(amountToSpend),
+                0,
+                allowance_after.comparedTo(allowance_before.minus(amountToSpend)),
                 "Tom could not tranger bob's token Charlie"
             )
 
             assert.equal(
-                charleiBalance_after,
-                charleiBalance_before + formatBigNumber(amountToSpend),
+                0,
+                charleiBalance_after.comparedTo(charleiBalance_before.plus(amountToSpend)),
                 "Balance of charlie did not increase"
             )
         })
@@ -176,8 +176,8 @@ contract("HID", accounts => {
     describe('Failure scenarios', async() => {
         it("Charlie should NOT transfer more than his balance token", async() => {
             try {
-                const balance = formatBigNumber(await instance.balanceOf(charlie));
-                const amountToSpend = convertToken(balance + 5);
+                const balance = BigNumber(await instance.balanceOf(charlie));
+                const amountToSpend = balance.plus(5);
                 await instance.transfer(bob, amountToSpend, { from: charlie });
                 // assert.fail()
             } catch (e) {
@@ -197,8 +197,8 @@ contract("HID", accounts => {
 
         it("Tom should NOT transfer more than what is approved to him", async() => {
             try {
-                const allowance_before = formatBigNumber(await instance.allowance(bob, tom));
-                await instance.transferFrom(bob, charlie, convertToken(allowance_before + 1), { from: tom });
+                const allowance_before = BigNumber(await instance.allowance(bob, tom));
+                await instance.transferFrom(bob, charlie, allowance_before.plus(1), { from: tom });
             } catch (e) {
                 // console.log(e.message);
             }
