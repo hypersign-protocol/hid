@@ -28,6 +28,18 @@ contract("HID", accounts => {
     })
 
     describe('Success scenarios', async() => {
+        it("Name of token should be set", async() => {
+            instance = await HID.deployed();
+            let name = await instance.name();
+            assert.equal(name, config.TOKEN_NAME);
+        });
+
+        it("Symbol of token should be set", async() => {
+            instance = await HID.deployed();
+            let symbol = await instance.symbol();
+            assert.equal(symbol, config.TOKEN_SYMBOL);
+        });
+
         it("totalSupply of token should be 50 million", async() => {
             instance = await HID.deployed();
             let totalSupply = await instance.totalSupply();
@@ -74,6 +86,29 @@ contract("HID", accounts => {
 
             const aliceBalance_after = formatBigNumber(await instance.balanceOf(alice));
             const bob_after = formatBigNumber(await instance.balanceOf(bob));
+
+            assert.equal(
+                bob_after,
+                bob_before + formatBigNumber(amountToSpend),
+                "Amount wasn't correctly taken from the sender"
+            )
+
+            assert.equal(
+                aliceBalance_after,
+                aliceBalance_before - formatBigNumber(amountToSpend),
+                "Amount wasn't correctly sent to the receiver"
+            )
+        })
+
+        it("alice should send 1.5 token to Dany", async() => {
+            const amountToSpend = convertToken(10)
+            const aliceBalance_before = formatBigNumber(await instance.balanceOf(alice));
+            const bob_before = formatBigNumber(await instance.balanceOf(dany));
+
+            await instance.transfer(dany, amountToSpend, { from: alice });
+
+            const aliceBalance_after = formatBigNumber(await instance.balanceOf(alice));
+            const bob_after = formatBigNumber(await instance.balanceOf(dany));
 
             assert.equal(
                 bob_after,

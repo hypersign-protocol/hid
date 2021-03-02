@@ -1,91 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.6.2 <0.8.0;
+pragma solidity ^0.6.0;
 
-import "./interface/IERC20.sol";
-import "./libs/SafeMaths.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract HID  is IERC20{
-    using SafeMath for uint256;
-    mapping (address => uint256) public balances;
-    mapping (address => mapping (address => uint256)) public allowed;
-    
-    string public name;                   
-    uint8 public decimals;                
-    string public symbol;  
-    uint256 public totalSupply;
-    
-    constructor(
-        uint256 _totalSupply,
-        string memory _tokenName,
-        uint8 _decimals,
-        string memory _tokenSymbol){
-            name = _tokenName;
-            symbol = _tokenSymbol;
-            decimals = _decimals;
-            totalSupply = _totalSupply.mul((10 ** uint256(decimals)));
-            balances[msg.sender] = totalSupply;
+contract HID is ERC20 {
+    constructor(uint256 initialSupply) public ERC20("Hypersign Identity Token", "HID") {
+        _mint(msg.sender, initialSupply);
     }
-    
-    modifier checkBalance(address _balanceOf, uint256 _value){
-        require(balances[_balanceOf] >= _value, 'HIDERR: Insufficient balance');
-        _;
-    }
-    modifier checkAddress(address _addr){
-        require(_addr != address(0), 'HIDERR: Invalid address');
-        _;
-    }
-    
-    function balanceOf(address _owner) 
-    public 
-    override
-    view returns (uint256 balance){
-        return balances[_owner];
-    }
-    
-    function transfer(address _to, uint256 _value) 
-    checkBalance(msg.sender, _value) 
-    checkAddress(_to)
-    public 
-    override
-    returns (bool success){
-        balances[msg.sender] = balances[msg.sender].sub(_value);
-        balances[_to] = balances[_to].add(_value);
-        emit Transfer(msg.sender, _to, _value);
-        return true;
-    }
-    
-    function transferFrom(address _from, address _to, uint256 _value) 
-    checkBalance(_from, _value)
-    checkAddress(_from)
-    checkAddress(_to)
-    public 
-    override
-    returns (bool success) {
-        require(allowed[_from][msg.sender] >= _value, 'HIDERR: You are not allowed to transfer');
-        balances[_from] = balances[_from].sub(_value);
-        balances[_to] = balances[_to].add(_value);
-        allowed[_from][msg.sender] = allowed[_from][msg.sender].sub(_value);
-        emit Transfer(_from, _to, _value);
-        return true;
-    }
-    
-    function approve(address _spender, uint256 _value) 
-    checkBalance(msg.sender, _value) 
-    checkAddress(_spender)
-    public 
-    override
-    returns (bool success){
-        allowed[msg.sender][_spender] = _value;
-        emit Approval(msg.sender, _spender, _value);
-        return true;
-    }
-    
-    function allowance(address _owner, address _spender) 
-    public 
-    override
-    view 
-    returns (uint256 remaining){
-        return allowed[_owner][_spender];
-    }
-    
 }
