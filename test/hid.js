@@ -98,7 +98,7 @@ contract("HID", accounts => {
 
 
         it("alice should send 1.5 token to Dany", async() => {
-            const amountToSpend = convertToken(10)
+            const amountToSpend = convertToken(1.5)
             const aliceBalance_before = BigNumber(await instance.balanceOf(alice));
             const bob_before = BigNumber(await instance.balanceOf(dany));
 
