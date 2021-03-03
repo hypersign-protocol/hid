@@ -1,4 +1,4 @@
-# HID
+# Hypersign Identity Token (HID)
 
 - Solidity version: `0.6.2`
 - Node version: `v13.12.0`
