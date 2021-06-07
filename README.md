@@ -30,9 +30,6 @@ cd hid
 
 # install required packages
 npm i 
-
-# create file to store mnemonics
-echo "<mnemonics>" > .secret 
 ```
 
 ## Compilation
@@ -52,7 +49,14 @@ truffle migrate --network development
 ### TestNet: Ropsten
 
 ```bash
-INFURA_KEY=<your_infura_project_key> truffle migrate --network ropsten
+MNEMONIC=<Your seed phrase> INFURA_API_KEY=<Your Infura project key> truffle migrate --network ropsten truffle migrate --network ropsten
+```
+
+
+### Mainnet
+
+```bash
+truffle migrate --network mainnet
 ```
 
 ## Testing
