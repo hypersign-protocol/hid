@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Vishwas1/hid.git"
+    "url": "git+https://github.com/hypersign-protocol/hid"
   },
   "keywords": [
     "HID",
@@ -24,9 +24,9 @@
   "author": "Vishwas Anand Bhushan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Vishwas1/hid/issues"
+    "url": "https://github.com/hypersign-protocol/hid/issues"
   },
-  "homepage": "https://github.com/Vishwas1/hid#readme",
+  "homepage": "https://github.com/hypersign-protocol/hid#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^3.4.0",
     "bignumber.js": "^1.2.1"
