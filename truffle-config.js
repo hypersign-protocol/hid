@@ -22,8 +22,8 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
 
 
-const mnemonic = fs.readFileSync(".secret").toString().trim();
-const { INFURA_API_KEY } = process.env;
+// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const { mnemonic, INFURA_API_KEY } = process.env;
 
 const ropstanUrl = `https://ropsten.infura.io/v3/${INFURA_API_KEY}`;
 const mainnetUrl = `https://mainnet.infura.io/v3/${INFURA_API_KEY}`;
