@@ -19,10 +19,14 @@
  */
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const { REACT_APP_INFURA_KEY } = require('./config')
-    //
 const fs = require('fs');
+
+
 const mnemonic = fs.readFileSync(".secret").toString().trim();
+const { INFURA_API_KEY } = process.env;
+
+const ropstanUrl = `https://ropsten.infura.io/v3/${INFURA_API_KEY}`;
+const mainnetUrl = `https://mainnet.infura.io/v3/${INFURA_API_KEY}`;
 
 module.exports = {
     /**
@@ -61,7 +65,7 @@ module.exports = {
         // Useful for deploying to a public network.
         // NB: It's important to wrap the provider as a function.
         ropsten: {
-            provider: () => new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${REACT_APP_INFURA_KEY}`),
+            provider: () => new HDWalletProvider(mnemonic, ropstanUrl),
             network_id: 3, // Ropsten's id
             gas: 5500000, // Ropsten has a lower block limit than mainnet
             confirmations: 2, // # of confs to wait between deployments. (default: 0)
@@ -69,12 +73,12 @@ module.exports = {
             skipDryRun: true // Skip dry run before migrations? (default: false for public nets )
         },
 
-        // Useful for private networks
-        // private: {
-        // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-        // network_id: 2111,   // This network is yours, in the cloud.
-        // production: true    // Treats this network as if it was a public net. (default: false)
-        // }
+        mainnet: {
+            provider: () => new HDWalletProvider(MNEMONIC, mainnetUrl),
+            network_id: 1,
+            skipDryRun: false
+          },
+
     },
 
     // Set default mocha options here, use special reporters etc.

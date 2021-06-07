@@ -29,6 +29,7 @@
   "homepage": "https://github.com/hypersign-protocol/hid#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^3.4.0",
+    "@truffle/hdwallet-provider": "^1.4.0",
     "bignumber.js": "^1.2.1"
   }
 }

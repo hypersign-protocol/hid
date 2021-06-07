@@ -9,7 +9,14 @@
 ### Private blockchain
 
 ```bash
+sudo npm i ganache-cli -g   # Install ganachen
 ganache-cli -m <mnemonics>  # Run private blockchain network
+```
+
+### Install Truffle
+
+``bash
+npm install -g truffle
 ```
 
 ### Setup repository
