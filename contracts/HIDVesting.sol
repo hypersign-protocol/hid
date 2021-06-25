@@ -20,8 +20,8 @@ contract HIDVesting is Ownable {
     // therefore sensitive to timestamp manipulation (which is something miners can do, to a certain degree). Therefore,
     // it is recommended to avoid using short time durations (less than a minute). Typical vesting schemes, with a
     // cliff period of a year and a duration of four years, are safe to use.
-    // solhint-disable not-rely-on-time
-    // using SafeMath for uint256;
+    
+    
     using SafeERC20 for IERC20;
 
     IERC20 public hidToken;
@@ -30,7 +30,7 @@ contract HIDVesting is Ownable {
     event TokenVestingRevoked(address token);
 
     // beneficiary of tokens after they are released
-    address private beneficiary;
+    address public beneficiary;
 
     // Durations and timestamps are expressed in UNIX time, the same units as block.timestamp.
     uint256 public cliff;
@@ -58,8 +58,8 @@ contract HIDVesting is Ownable {
     uint256 PERCENTAGE_MULTIPLIER = 100;
     uint256 totalReleasedAmount = 0;
 
-    mapping(address => Vesting) private beneficiaryVestingScheduleRegistry;
-    Vesting[] vestings;
+    Vesting[] vestings; // only used to initialised 
+    Vesting vestingData;
 
     /**
      * @notice Only allow calls from the beneficiary of the vesting contract
@@ -128,9 +128,9 @@ contract HIDVesting is Ownable {
         uint256 st = _startTime + _cliffDuration + _waitDuration;
 
         // Prepare vesting schedule list
-        Vesting storage vesting = vestings.push();
+        vestingData = vestings.push();
         for (uint256 i = 0; i < numberOfPayouts; i++) {
-            vesting.vestingSchedules.push(
+            vestingData.vestingSchedules.push(
                 VestingSchedule({
                     unlockPercentage: (i + 1) * _payOutPercentage,
                     unlockTime: st + (i * _payOutInterval)
@@ -138,11 +138,11 @@ contract HIDVesting is Ownable {
             );
         }
 
-        vesting.numberOfVestingPeriods = numberOfPayouts;
-        vesting.totalUnlockedAmount = 0;
-        vesting.lastUnlockedTime = 0;
+        vestingData.numberOfVestingPeriods = numberOfPayouts;
+        vestingData.totalUnlockedAmount = 0;
+        vestingData.lastUnlockedTime = 0;
 
-        beneficiaryVestingScheduleRegistry[_beneficiary] = vesting;
+        // vestingData = vesting;
 
         start = _startTime;
         cliff = start + _cliffDuration;
@@ -155,20 +155,19 @@ contract HIDVesting is Ownable {
     }
 
     function getBenificiaryVestingSchedules(
-        address _beneficiary,
         uint256 _index
     ) public view returns (uint256, uint256) {
         return (
-            beneficiaryVestingScheduleRegistry[_beneficiary]
+            vestingData
                 .vestingSchedules[_index]
                 .unlockTime,
-            beneficiaryVestingScheduleRegistry[_beneficiary]
+            vestingData
                 .vestingSchedules[_index]
                 .unlockPercentage
         );
     }
 
-    function getBeneVestingDetails(address _beneficiary)
+    function getBeneVestingDetails()
         public
         view
         returns (
@@ -178,11 +177,11 @@ contract HIDVesting is Ownable {
         )
     {
         return (
-            beneficiaryVestingScheduleRegistry[_beneficiary]
+            vestingData
                 .numberOfVestingPeriods,
-            beneficiaryVestingScheduleRegistry[_beneficiary]
+            vestingData
                 .totalUnlockedAmount,
-            beneficiaryVestingScheduleRegistry[_beneficiary].lastUnlockedTime
+            vestingData.lastUnlockedTime
         );
     }
 
@@ -190,7 +189,7 @@ contract HIDVesting is Ownable {
         return hidToken.balanceOf(address(this));
     }
 
-    function release(address _beneficiary) public onlyBeneficiary {
+    function release() public onlyBeneficiary {
         //
         require(
             block.timestamp > cliff,
@@ -203,7 +202,7 @@ contract HIDVesting is Ownable {
             "No funds can be released during waiting period"
         );
 
-        Vesting storage v = beneficiaryVestingScheduleRegistry[_beneficiary];
+        Vesting storage v = vestingData;
 
         // Figure out the slot : index for % payout & payout time
         uint256 index;
@@ -227,37 +226,36 @@ contract HIDVesting is Ownable {
             }
         }
 
-        uint256 unreleased = getReleasableAmount(_beneficiary, index);
+        uint256 unreleased = getReleasableAmount(index);
 
         v.lastUnlockedTime = v.vestingSchedules[index].unlockTime;
         v.totalUnlockedAmount += unreleased;
         totalReleasedAmount += unreleased;
 
-        hidToken.safeTransfer(_beneficiary, unreleased);
+        hidToken.safeTransfer(beneficiary, unreleased);
     }
 
-    function getReleasableAmount(address _beneficiary, uint256 _index)
+    function getReleasableAmount(uint256 _index)
         private
         view
         returns (uint256)
     {
-        Vesting memory v = beneficiaryVestingScheduleRegistry[_beneficiary];
-        return getVestedAmount(_beneficiary, _index) - v.totalUnlockedAmount;
+        return getVestedAmount(_index) - vestingData.totalUnlockedAmount;
     }
 
-    function getVestedAmount(address _beneficiary, uint256 _index)
-        private
+    function getVestedAmount(uint256 _index)
+        public
         view
         returns (uint256)
     {
-        Vesting storage v = beneficiaryVestingScheduleRegistry[_beneficiary];
+        // Vesting storage v = vestingData;
 
         uint256 currentBalance = hidToken.balanceOf(address(this));
-        uint256 totalBalance = currentBalance + v.totalUnlockedAmount; // this was the initial balance
+        uint256 totalBalance = currentBalance + vestingData.totalUnlockedAmount; // this was the initial balance
 
-        VestingSchedule memory vs = v.vestingSchedules[_index];
+        // VestingSchedule memory vs = vestingData.vestingSchedules[_index];
         return
-            (totalBalance * vs.unlockPercentage) /
+            (totalBalance * vestingData.vestingSchedules[_index].unlockPercentage) /
             (100 * PERCENTAGE_MULTIPLIER);
     }
 }
