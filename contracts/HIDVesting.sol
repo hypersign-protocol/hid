@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.6.2;
+pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -77,7 +77,7 @@ contract HIDVesting is Ownable {
         uint256 _payOutPercentage, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
         uint256 _payOutInterval, // intervals (in seconds) at which funds will be released
         bool _revocable
-    ) public {
+    ) {
         
         require(_beneficiary != address(0), "HIDVesting: beneficiary is the zero address");
         
@@ -95,33 +95,11 @@ contract HIDVesting is Ownable {
         // this I need to find out why it is required. It was copied fromm Zepplin vest contract
         require(_cliffDuration <= _payOutInterval, "HIDVesting: cliff is longer than payout interval");
         
-        /**
-         *  Example explanation
-            start = 12:03  1624429980
-            cliff = 2 min
-            wt = 1 min
-            interval = 2 min
-
-            st = start + cliff + wt
-            
-            it = 1000 HID
-
-            0.  12:03 0%   0                        1624429980              0
-            1.  12:06 20%   st + (0 * interval)     1624430160      it         200
-            2.  12:08 40%   st + (1 * interval)     1624430280              400
-            3.  12:10 60%   st + (2 * interval)     1624430400              600
-            4.  12:12 80%   st + (3 * interval)     1624430520              800
-            5.  12:14 100%  st + (4 * interval)     1624430640              1000 
-        
-        */
-        // 33.33
-        // 3333
-
         /////Preparing vesting schedule
         // Calcualting in how many intervals the tokens will be unlocked
+        
         // WARNING: _payOutPercentage should be even number, otherwise it might wrong calcualtion
-        uint256 numberOfPayouts = (100 * PERCENTAGE_MULTIPLIER) /
-            _payOutPercentage;
+        uint256 numberOfPayouts = (100 * PERCENTAGE_MULTIPLIER) / _payOutPercentage;
         
         // Get total time before the unlock starts
         uint256 st = _startTime + _cliffDuration + _waitDuration;
