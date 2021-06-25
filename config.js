@@ -13,6 +13,16 @@ module.exports = {
             beneficiary : "0x81a32051A7c6417E79591e239869F4179429563f", // address of beneficiary
             startTime :  Math.ceil((new Date().getTime()) / 1000),    // start time in seconds (epoch time)
             cliffDuration : (2 * MINUTE), // cliff duration in seconds
+            payOutPercentage : 2000, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
+            payOutInterval : (2 * MINUTE), // intervals (in seconds) at which funds will be released
+            revocable : true, 
+            totalAmountToBeVested: 5100000
+        },
+        teamAndAdvisory : {
+            token : "", // HID token address
+            beneficiary : "0x81a32051A7c6417E79591e239869F4179429563f", // address of beneficiary
+            startTime :  Math.ceil((new Date().getTime()) / 1000),    // start time in seconds (epoch time)
+            cliffDuration : (2 * MINUTE), // cliff duration in seconds
             waitDuration : (2 * MINUTE), // wait duration after cliff in seconds
             payOutPercentage : 5000, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
             payOutInterval : (2 * MINUTE), // intervals (in seconds) at which funds will be released

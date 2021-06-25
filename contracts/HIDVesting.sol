@@ -6,8 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-
-
 /**
  * @title TokenVesting
  * @dev A token holder contract that can release its token balance gradually like a
@@ -19,8 +17,6 @@ contract HIDVesting is Ownable {
     // therefore sensitive to timestamp manipulation (which is something miners can do, to a certain degree). Therefore,
     // it is recommended to avoid using short time durations (less than a minute). Typical vesting schemes, with a
     // cliff period of a year and a duration of four years, are safe to use.
-    
-    
     using SafeERC20 for IERC20;
 
     IERC20 public hidToken;
@@ -35,7 +31,6 @@ contract HIDVesting is Ownable {
     uint256 public cliff;
     uint256 public start;
     uint256 private duration;
-    uint256 public waitTime;
 
     bool private revocable;
 
@@ -73,8 +68,7 @@ contract HIDVesting is Ownable {
     * @param  _token HID token contract address
     * @param  _beneficiary address of beneficiary
     * @param  _startTime start time in seconds (epoch time)
-    * @param  _cliffDuration cliff duration in seconds
-    * @param  _waitDuration wait duration after cliff in seconds
+    * @param  _cliffDuration cliff duration in second    
     * @param  _payOutPercentage % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
     * @param  _payOutInterval intervals (in seconds) at which funds will be released
     * @param  _revocable is contract revokable by owner or not
@@ -84,7 +78,6 @@ contract HIDVesting is Ownable {
         address _beneficiary,
         uint256 _startTime,
         uint256 _cliffDuration,
-        uint256 _waitDuration,
         uint256 _payOutPercentage,
         uint256 _payOutInterval,
         bool    _revocable
@@ -113,7 +106,7 @@ contract HIDVesting is Ownable {
         uint256 numberOfPayouts = (100 * PERCENTAGE_MULTIPLIER) / _payOutPercentage;
         
         // Get total time before the unlock starts
-        uint256 st = _startTime + _cliffDuration + _waitDuration;
+        uint256 st = _startTime + _cliffDuration;
 
         // Prepare vesting schedule list
         vestingData = vestings.push();
@@ -128,13 +121,10 @@ contract HIDVesting is Ownable {
 
         vestingData.numberOfVestingPeriods = numberOfPayouts;
         vestingData.totalUnlockedAmount = 0;
-        vestingData.lastUnlockedTime = 0;
-
-        // vestingData = vesting;
+        vestingData.lastUnlockedTime = 0;        
 
         start = _startTime;
         cliff = start + _cliffDuration;
-        waitTime = cliff + _waitDuration;
         hidToken = _token;
         beneficiary = _beneficiary;
 
@@ -197,12 +187,6 @@ contract HIDVesting is Ownable {
             "HIDVesting: No funds can be released during cliff period"
         );
 
-        // no funds to be released before waitTime
-        require(
-            block.timestamp >= waitTime,
-            "HIDVesting: No funds can be released during waiting period"
-        );
-
         Vesting storage v = vestingData;
 
         // Figure out the slot : index for % payout & payout time
@@ -211,7 +195,7 @@ contract HIDVesting is Ownable {
         if (v.lastUnlockedTime == 0) {
             // Release tokens for first slot
             index = 0;
-        } else if( block.timestamp > v.vestingSchedules[ v.numberOfVestingPeriods - 1].unlockTime ){
+        } else if( block.timestamp >= v.vestingSchedules[ v.numberOfVestingPeriods - 1].unlockTime ){
             // Release all tokens after completing all vesting periods
             index = v.numberOfVestingPeriods - 1;
         } else {

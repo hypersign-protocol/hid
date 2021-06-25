@@ -10,7 +10,6 @@ module.exports = function(deployer) {
         seedAndPrivate.beneficiary,
         seedAndPrivate.startTime,
         seedAndPrivate.cliffDuration,
-        seedAndPrivate.waitDuration,
         seedAndPrivate.payOutPercentage,
         seedAndPrivate.payOutInterval,
         seedAndPrivate.revocable);
