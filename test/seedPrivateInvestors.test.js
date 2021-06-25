@@ -49,7 +49,7 @@ contract("HIDVesting", (accounts) => {
   });
 
   // async function getVestingDetails(){
-  //   const res = await instance.getBeneVestingDetails(seedAndPrivateInvestorAccount);
+  //   const res = await instance.getCurrentVestingDetails(seedAndPrivateInvestorAccount);
   //   const totalUnlockedAmount = res[1];
   //   const lastUnlockedTime = res[2];
   //   return {
@@ -91,14 +91,14 @@ contract("HIDVesting", (accounts) => {
       );
 
       it(`Should be able to unlock at ${getDateFromEpoch(unlockTime)}`, async () => {
-        const result = await instance.getBenificiaryVestingSchedules(
+        const result = await instance.getVestingSchedule(
           i
         );
         assert.equal(result[0], unlockTime);
       });
 
       it(`Should be able to unlock tokens percentage ${unlockPercentage}`, async () => {
-        const result = await instance.getBenificiaryVestingSchedules(
+        const result = await instance.getVestingSchedule(
           i
         );
         assert.equal(result[1], unlockPercentage);
@@ -237,7 +237,7 @@ contract("HIDVesting", (accounts) => {
           });
       
           it(`there should be ${expectedNumberOfIntervals} interval in which tokens should be unlocked`, async () => {
-            const result = await instance.getBeneVestingDetails( 
+            const result = await instance.getCurrentVestingDetails( 
             );
             assert.equal(result[0], expectedNumberOfIntervals);
           });

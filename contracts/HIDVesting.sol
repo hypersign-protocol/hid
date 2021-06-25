@@ -68,15 +68,26 @@ contract HIDVesting is Ownable {
         _;
     }
 
+    /**
+    * @notice Initialises the contract with required parameters
+    * @param  _token HID token contract address
+    * @param  _beneficiary address of beneficiary
+    * @param  _startTime start time in seconds (epoch time)
+    * @param  _cliffDuration cliff duration in seconds
+    * @param  _waitDuration wait duration after cliff in seconds
+    * @param  _payOutPercentage % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
+    * @param  _payOutInterval intervals (in seconds) at which funds will be released
+    * @param  _revocable is contract revokable by owner or not
+    */
     constructor(
-        IERC20 _token, // HID token address
-        address _beneficiary, // address of beneficiary
-        uint256 _startTime, // start time in seconds (epoch time)
-        uint256 _cliffDuration, // cliff duration in seconds
-        uint256 _waitDuration, // wait duration after cliff in seconds
-        uint256 _payOutPercentage, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
-        uint256 _payOutInterval, // intervals (in seconds) at which funds will be released
-        bool _revocable
+        IERC20  _token,
+        address _beneficiary,
+        uint256 _startTime,
+        uint256 _cliffDuration,
+        uint256 _waitDuration,
+        uint256 _payOutPercentage,
+        uint256 _payOutInterval,
+        bool    _revocable
     ) {
         
         require(_beneficiary != address(0), "HIDVesting: beneficiary is the zero address");
@@ -131,7 +142,11 @@ contract HIDVesting is Ownable {
         revocable = _revocable;
     }
 
-    function getBenificiaryVestingSchedules(
+    /**
+     * @notice Returns vesting schedule at each index
+     * @param _index index of vestingSchedules array
+     */
+    function getVestingSchedule(
         uint256 _index
     ) public view returns (uint256, uint256) {
         return (
@@ -144,7 +159,10 @@ contract HIDVesting is Ownable {
         );
     }
 
-    function getBeneVestingDetails()
+    /**
+     * @notice Returns detials of current vesting perriod
+     */
+    function getCurrentVestingDetails()
         public
         view
         returns (
@@ -162,21 +180,27 @@ contract HIDVesting is Ownable {
         );
     }
 
+    /**
+     * @notice Returns current HID balance of this contract 
+     */
     function getBalance() public view returns (uint256) {
         return hidToken.balanceOf(address(this));
     }
 
+    /**
+     * @notice Releases funds to the beneficiary
+     */
     function release() public onlyBeneficiary {
         //
         require(
             block.timestamp > cliff,
-            "No funds can be released during cliff period"
+            "HIDVesting: No funds can be released during cliff period"
         );
 
         // no funds to be released before waitTime
         require(
             block.timestamp >= waitTime,
-            "No funds can be released during waiting period"
+            "HIDVesting: No funds can be released during waiting period"
         );
 
         Vesting storage v = vestingData;
@@ -205,6 +229,8 @@ contract HIDVesting is Ownable {
 
         uint256 unreleased = getReleasableAmount(index);
 
+        require(unreleased > 0, "HIDVesting: no tokens are due");
+
         v.lastUnlockedTime = v.vestingSchedules[index].unlockTime;
         v.totalUnlockedAmount += unreleased;
         totalReleasedAmount += unreleased;
@@ -212,6 +238,10 @@ contract HIDVesting is Ownable {
         hidToken.safeTransfer(beneficiary, unreleased);
     }
 
+    /**
+     * @notice Calcualtes releasable amount for beneficiary
+     * @param _index index of vestingSchedules array
+     */
     function getReleasableAmount(uint256 _index)
         private
         view
@@ -220,6 +250,10 @@ contract HIDVesting is Ownable {
         return getVestedAmount(_index) - vestingData.totalUnlockedAmount;
     }
 
+    /**
+     * @notice Calcualtes vestable amount for beneficiary for current time
+     * @param _index index of vestingSchedules array
+     */
     function getVestedAmount(uint256 _index)
         public
         view
