@@ -7,7 +7,7 @@ module.exports = function(deployer) {
     deployer.deploy(
         HIDVesting,
         HID.address,
-        "0x81a32051A7c6417E79591e239869F4179429563f",
+        seedAndPrivate.beneficiary,
         seedAndPrivate.startTime,
         seedAndPrivate.cliffDuration,
         seedAndPrivate.waitDuration,

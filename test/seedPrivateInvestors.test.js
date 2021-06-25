@@ -48,15 +48,15 @@ contract("HIDVesting", (accounts) => {
     tokenInstance = await HID.deployed();
   });
 
-  async function getVestingDetails(){
-    const res = await instance.getBeneVestingDetails(seedAndPrivateInvestorAccount);
-    const totalUnlockedAmount = res[1];
-    const lastUnlockedTime = res[2];
-    return {
-      totalUnlockedAmount: BigNumber(totalUnlockedAmount),
-      lastUnlockedTime: BigNumber(lastUnlockedTime)
-    }
-  }
+  // async function getVestingDetails(){
+  //   const res = await instance.getBeneVestingDetails(seedAndPrivateInvestorAccount);
+  //   const totalUnlockedAmount = res[1];
+  //   const lastUnlockedTime = res[2];
+  //   return {
+  //     totalUnlockedAmount: BigNumber(totalUnlockedAmount),
+  //     lastUnlockedTime: BigNumber(lastUnlockedTime)
+  //   }
+  // }
 
   function getDateFromEpoch(seconds) {
     let d;
@@ -92,7 +92,6 @@ contract("HIDVesting", (accounts) => {
 
       it(`Should be able to unlock at ${getDateFromEpoch(unlockTime)}`, async () => {
         const result = await instance.getBenificiaryVestingSchedules(
-          seedAndPrivateInvestorAccount,
           i
         );
         assert.equal(result[0], unlockTime);
@@ -100,7 +99,6 @@ contract("HIDVesting", (accounts) => {
 
       it(`Should be able to unlock tokens percentage ${unlockPercentage}`, async () => {
         const result = await instance.getBenificiaryVestingSchedules(
-          seedAndPrivateInvestorAccount,
           i
         );
         assert.equal(result[1], unlockPercentage);
@@ -108,7 +106,7 @@ contract("HIDVesting", (accounts) => {
 
       it(`Should be able to unlock tokens ${unlockTokens}`, async () => {
         const result = BigNumber(
-          await instance.getVestedAmount(seedAndPrivateInvestorAccount, i)
+          await instance.getVestedAmount(i)
         );
         assert.equal(0, unlockTokens.comparedTo(result));
       });
@@ -146,7 +144,7 @@ contract("HIDVesting", (accounts) => {
     return new Promise(async (resolve, reject) => {
       try {
         const spInvestorBalance_before = BigNumber(await tokenInstance.balanceOf(seedAndPrivateInvestorAccount));
-        await instance.release(seedAndPrivateInvestorAccount, {
+        await instance.release({
           from: seedAndPrivateInvestorAccount,
         });
         const spInvestorBalance_after = BigNumber(await tokenInstance.balanceOf(seedAndPrivateInvestorAccount));
@@ -169,33 +167,33 @@ contract("HIDVesting", (accounts) => {
           return setTimeout(() => { resolve("Done") },  interval);
       })
   }
-  async function itShouldTryToReleaseFundsAfter(after) {
-    return new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        try {
-          const spInvestorBalance_before = BigNumber(
-            await tokenInstance.balanceOf(seedAndPrivateInvestorAccount)
-          );
-          await instance.release(seedAndPrivateInvestorAccount, {
-            from: seedAndPrivateInvestorAccount,
-          });
-          const spInvestorBalance_after = BigNumber(
-            await tokenInstance.balanceOf(seedAndPrivateInvestorAccount)
-          );
-          console.log({
-            spInvestorBalance_before,
-            spInvestorBalance_after,
-          });
-          resolve({
-            spInvestorBalance_before,
-            spInvestorBalance_after,
-          });
-        } catch (e) {
-          reject(e.message);
-        }
-      }, after);
-    });
-  }
+  // async function itShouldTryToReleaseFundsAfter(after) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(async () => {
+  //       try {
+  //         const spInvestorBalance_before = BigNumber(
+  //           await tokenInstance.balanceOf(seedAndPrivateInvestorAccount)
+  //         );
+  //         await instance.release(seedAndPrivateInvestorAccount, {
+  //           from: seedAndPrivateInvestorAccount,
+  //         });
+  //         const spInvestorBalance_after = BigNumber(
+  //           await tokenInstance.balanceOf(seedAndPrivateInvestorAccount)
+  //         );
+  //         console.log({
+  //           spInvestorBalance_before,
+  //           spInvestorBalance_after,
+  //         });
+  //         resolve({
+  //           spInvestorBalance_before,
+  //           spInvestorBalance_after,
+  //         });
+  //       } catch (e) {
+  //         reject(e.message);
+  //       }
+  //     }, after);
+  //   });
+  // }
 
   describe("Vesting for seed & private investors", async () => {
       
@@ -239,8 +237,7 @@ contract("HIDVesting", (accounts) => {
           });
       
           it(`there should be ${expectedNumberOfIntervals} interval in which tokens should be unlocked`, async () => {
-            const result = await instance.getBeneVestingDetails(
-              seedAndPrivateInvestorAccount
+            const result = await instance.getBeneVestingDetails( 
             );
             assert.equal(result[0], expectedNumberOfIntervals);
           });
@@ -262,6 +259,13 @@ contract("HIDVesting", (accounts) => {
             "should be able to set waitTime " + getDateFromEpoch(expectedWaitTime) + "  properly",
             async () => {
               assert.equal(expectedWaitTime, await instance.waitTime());
+            }
+          );
+
+          it(
+            "should be able to set benefiricay properly " + vesting.seedAndPrivate.beneficiary + "  properly",
+            async () => {
+              assert.equal(vesting.seedAndPrivate.beneficiary, await instance.beneficiary());
             }
           );
      })
