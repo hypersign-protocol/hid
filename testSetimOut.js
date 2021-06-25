@@ -1,4 +1,4 @@
-const { vesting } =  require("../config")
+const { vesting } =  require("./config")
 const { seedAndPrivate } = vesting;
 
 
@@ -27,15 +27,23 @@ async function itShouldTryToReleaseFundsAfter(after){
     })
 }
 
-// execute in cliff period
-const t = Math.ceil((new Date().getTime() + 10000) / 1000)
-let delay = expectedCliffTime * 1000 - (new Date().getTime())
-itShouldTryToReleaseFundsAfter(delay).then(r => {
-    console.log(r)
-    delay = (expectedWaitTime  - expectedCliffTime) * 1000
+now  :  7:28
+start:  7:30
+cliff:  7:32 -----  7:32 - 7:28 = 4 min = 4 * 60 = 240 000 
+wait :  7:34 -----  7:34 - 7:28 = 6 - 1 min = 
+
+
+    // execute in cliff period
+    let delay = expectedCliffTime * 1000 - (new Date().getTime())
+    console.log(delay)
+    itShouldTryToReleaseFundsAfter(delay).then(r => {
+        console.log(r)
+    }).catch(e => {
+        console.log(e)
+    })
+
+    delay = expectedWaitTime  * 1000 - (new Date().getTime())
+    console.log(delay)
     itShouldTryToReleaseFundsAfter(delay).then(r => {
         console.log(r)
     })
-}).catch(e => {
-    console.log(e)
-})
