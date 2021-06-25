@@ -79,13 +79,23 @@ contract HIDVesting is Ownable {
         uint256 _payOutInterval, // intervals (in seconds) at which funds will be released
         bool _revocable
     ) public {
-        // require(beneficiary != address(0), "TokenVesting: beneficiary is the zero address");
-        // // solhint-disable-next-line max-line-length
-        // require(cliffDuration <= duration, "TokenVesting: cliff is longer than duration");
-        // require(duration > 0, "TokenVesting: duration is 0");
-        // // solhint-disable-next-line max-line-length
-        // require(start.add(duration) > block.timestamp, "TokenVesting: final time is before current time");
+        
+        require(_beneficiary != address(0), "HIDVesting: beneficiary is the zero address");
+        
+        // Need to check this later .. it was not working
+        // require(_startTime  > block.timestamp, "HIDVesting: start time is before current time");
 
+        require(_payOutInterval > 0, "HIDVesting: payout interval is 0");
+
+        require(_payOutInterval > 0, "HIDVesting: payout interval is 0");
+
+        require(_payOutPercentage > 0, "HIDVesting: payout percentage is 0");
+
+        require(_payOutPercentage <= (100 * PERCENTAGE_MULTIPLIER), "HIDVesting: payout percentage is more than 100%");
+
+        // this I need to find out why it is required. It was copied fromm Zepplin vest contract
+        require(_cliffDuration <= _payOutInterval, "HIDVesting: cliff is longer than payout interval");
+        
         /**
          *  Example explanation
             start = 12:03  1624429980
@@ -105,13 +115,19 @@ contract HIDVesting is Ownable {
             5.  12:14 100%  st + (4 * interval)     1624430640              1000 
         
         */
+        // 33.33
+        // 3333
 
-        //Preparing vesting schedule
+        /////Preparing vesting schedule
+        // Calcualting in how many intervals the tokens will be unlocked
+        // WARNING: _payOutPercentage should be even number, otherwise it might wrong calcualtion
         uint256 numberOfPayouts = (100 * PERCENTAGE_MULTIPLIER) /
             _payOutPercentage;
-
+        
+        // Get total time before the unlock starts
         uint256 st = _startTime + _cliffDuration + _waitDuration;
 
+        // Prepare vesting schedule list
         Vesting storage vesting = vestings.push();
         for (uint256 i = 0; i < numberOfPayouts; i++) {
             vesting.vestingSchedules.push(
@@ -133,6 +149,8 @@ contract HIDVesting is Ownable {
         waitTime = cliff + _waitDuration;
         hidToken = _token;
         beneficiary = _beneficiary;
+
+        // Need to use this later
         revocable = _revocable;
     }
 
@@ -219,7 +237,7 @@ contract HIDVesting is Ownable {
     }
 
     function getReleasableAmount(address _beneficiary, uint256 _index)
-        public
+        private
         view
         returns (uint256)
     {
@@ -228,7 +246,7 @@ contract HIDVesting is Ownable {
     }
 
     function getVestedAmount(address _beneficiary, uint256 _index)
-        public
+        private
         view
         returns (uint256)
     {
