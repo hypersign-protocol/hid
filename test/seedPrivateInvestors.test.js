@@ -95,28 +95,7 @@ contract("HIDVesting", (accounts) => {
     });
   }
 
-  function itShouldBeAbleToReleaseFund(i) {
-    describe(`Release funs for round ${i + 1}`, async () => {
-      delayInterval = vesting.seedAndPrivate.payOutInterval * MILLISECONDS;
-      delay(delayInterval);
-
-      it(`beneficiary should be able to release at time`, async () => {
-        console.log(getDateFromEpoch("now"));
-        const result = await releaseFunds();
-        console.log(result);
-        // const res = await getVestingDetails();
-        // console.log(res)
-        assert.equal(
-          1,
-          result.spInvestorBalance_after.comparedTo(
-            result.spInvestorBalance_before
-          ), // comparedTo return 0 if two bignumbers are same; Ref: https://mikemcl.github.io/bignumber.js/#cmp
-          "Amount could not tranfered to beneficiary"
-        );
-      });
-    });
-  }
-
+  
   function delay(interval) {
     return it(`should delay for ${interval} milliseconds`, (done) => {
       setTimeout(() => done(), interval);
@@ -220,7 +199,6 @@ contract("HIDVesting", (accounts) => {
     // verify all vesting schedules;  unlocktime and unlockpercentage
     describe("Verifying vesting schedules", async () => {
       for (i = 0; i < expectedNumberOfIntervals; i++) {
-        // const i = 0
         itShouldVerifyVestingSchedule(i);
       }
     });
@@ -240,12 +218,87 @@ contract("HIDVesting", (accounts) => {
         }
       });
 
-      for (i = 0; i < expectedNumberOfIntervals; i++) {
-        // const i = 0
-        itShouldBeAbleToReleaseFund(i);
-      }
+      // for (i = 0; i < expectedNumberOfIntervals; i++) {
+      //   describe(`Release funs for round ${i + 1}`, async () => {
+      //     delayInterval = vesting.seedAndPrivate.payOutInterval * MILLISECONDS;
+      //     delay(delayInterval);
 
-      return;
+      //     it(`beneficiary should be able to release at time`, async () => {
+      //       console.log(getDateFromEpoch("now"));
+      //       const result = await releaseFunds(i);
+      //       console.log(result);
+      //       assert.equal(
+      //         1,
+      //         result.spInvestorBalance_after.comparedTo(
+      //           result.spInvestorBalance_before
+      //         ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+      //         "Amount could not tranfered to beneficiary"
+      //       );
+      //     });
+      //   });
+      // }
+      // return;
+
+      describe(`Release funds for round 1`, async () => {
+        delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
+        delay(delayInterval);
+        it("beneficiary should be able to release fund for round 1", async () => {
+          const result = await releaseFunds(i);
+          assert.equal(
+                    1,
+                    result.spInvestorBalance_after.comparedTo(
+                      result.spInvestorBalance_before
+                    ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                    "Amount could not tranfered to beneficiary"
+              );
+        })
+      })
+      describe(`Release funds for round 2`, async () => {
+        delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
+        delay(delayInterval);
+        it("beneficiary should be able to release fund for round 2", async () => {
+          const result = await releaseFunds(i);
+          assert.equal(
+                    1,
+                    result.spInvestorBalance_after.comparedTo(
+                      result.spInvestorBalance_before
+                    ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                    "Amount could not tranfered to beneficiary"
+              );
+        })
+
+        it("beneficiary should NOT be able to release fund for round 2 since we already withdrawn", async () => {
+          try{
+            const result = await releaseFunds(i);
+            assert.equal(
+                      1,
+                      result.spInvestorBalance_after.comparedTo(
+                        result.spInvestorBalance_before
+                      ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                      "Amount could not tranfered to beneficiary"
+                );
+          }catch(e){
+            console.log(e)
+          }
+        })
+      });
+
+      describe(`Release funds for round 3`, async () => {
+        delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
+        delay(delayInterval);
+        it("beneficiary should be able to release fund for round 3", async () => {
+          const result = await releaseFunds(i);
+          assert.equal(
+                    1,
+                    result.spInvestorBalance_after.comparedTo(
+                      result.spInvestorBalance_before
+                    ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                    "Amount could not tranfered to beneficiary"
+              );
+        })
+      })
+
+      
     });
   });
 });

@@ -24,7 +24,7 @@ module.exports = {
             startTime :  Math.ceil((new Date().getTime()) / 1000),    // start time in seconds (epoch time)
             cliffDuration : (2 * MINUTE), // cliff duration in seconds
             waitDuration : (2 * MINUTE), // wait duration after cliff in seconds
-            payOutPercentage : 5000, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
+            payOutPercentage : 2000, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
             payOutInterval : (2 * MINUTE), // intervals (in seconds) at which funds will be released
             revocable : true, 
             totalAmountToBeVested: 5100000

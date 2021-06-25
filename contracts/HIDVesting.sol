@@ -178,6 +178,15 @@ contract HIDVesting is Ownable {
     }
 
     /**
+     * @notice Returns initial balance
+     */
+    function getInitialBalance() public view returns (uint256) {
+        uint256 currentBalance = getBalance();
+        uint256 totalBalance = currentBalance + vestingData.totalUnlockedAmount; // this was the initial balance
+        return totalBalance;
+    }
+
+    /**
      * @notice Releases funds to the beneficiary
      */
     function release() public onlyBeneficiary {
@@ -189,7 +198,7 @@ contract HIDVesting is Ownable {
 
         Vesting storage v = vestingData;
 
-        // Figure out the slot : index for % payout & payout time
+        // Figure out the slot : index of vesting schedule
         uint256 index;
         
         if (v.lastUnlockedTime == 0) {
@@ -242,13 +251,9 @@ contract HIDVesting is Ownable {
         public
         view
         returns (uint256)
-    {
-        // Vesting storage v = vestingData;
+    {        
+        uint256 totalBalance = getInitialBalance();
 
-        uint256 currentBalance = hidToken.balanceOf(address(this));
-        uint256 totalBalance = currentBalance + vestingData.totalUnlockedAmount; // this was the initial balance
-
-        // VestingSchedule memory vs = vestingData.vestingSchedules[_index];
         return
             (totalBalance * vestingData.vestingSchedules[_index].unlockPercentage) /
             (100 * PERCENTAGE_MULTIPLIER);
