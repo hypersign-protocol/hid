@@ -14,19 +14,18 @@ contract("HIDLiquidityProvision", (accounts) => {
   const MILLISECONDS = 1000;
   const seedAndPrivateInvestorAccount = accounts[4];
 
-  console.log(seedAndPrivateInvestorAccount);
   console.log({
     hid: HID.address,
     hidVesting: HIDVesting.address,
   });
 
-  const initalTokenBalance = vesting.seedAndPrivate.totalAmountToBeVested;
+  const initalTokenBalance = vesting.liquidityProvision.totalAmountToBeVested;
   const expectedNumberOfIntervals =
-    (100 * PERCENTAGE_MULTIPLIER) / vesting.seedAndPrivate.payOutPercentage;
+    (100 * PERCENTAGE_MULTIPLIER) / vesting.liquidityProvision.payOutPercentage;
   const totalStartCliffAndWaitTime =
-    vesting.seedAndPrivate.startTime + vesting.seedAndPrivate.cliffDuration;
+    vesting.liquidityProvision.startTime + vesting.liquidityProvision.cliffDuration;
   const expectedCliffTime =
-    vesting.seedAndPrivate.startTime + vesting.seedAndPrivate.cliffDuration; // in secods
+    vesting.liquidityProvision.startTime + vesting.liquidityProvision.cliffDuration; // in secods
   
   const vestingContractAddress = HIDVesting.address;
 
@@ -44,9 +43,9 @@ contract("HIDLiquidityProvision", (accounts) => {
   function itShouldVerifyVestingSchedule(i) {
     describe(`vesting schedule for round ${i + 1}`, async () => {
       const unlockPercentage =
-        (i + 1) * vesting.seedAndPrivate.payOutPercentage;
+        (i + 1) * vesting.liquidityProvision.payOutPercentage;
       const unlockTime =
-        totalStartCliffAndWaitTime + i * vesting.seedAndPrivate.payOutInterval;
+        totalStartCliffAndWaitTime + i * vesting.liquidityProvision.payOutInterval;
       const unlockTokens = convertToken(
         (initalTokenBalance * unlockPercentage) / (100 * PERCENTAGE_MULTIPLIER)
       );
@@ -121,7 +120,7 @@ contract("HIDLiquidityProvision", (accounts) => {
         initalTokenBalance / MILLIONS
       }`, async () => {
         const initalTokens = convertToken(
-          vesting.seedAndPrivate.totalAmountToBeVested
+          vesting.liquidityProvision.totalAmountToBeVested
         );
 
         // first transfer HID to vesting contract
@@ -141,11 +140,11 @@ contract("HIDLiquidityProvision", (accounts) => {
 
       it(
         "should be able to set startTime " +
-          getDateFromEpoch(vesting.seedAndPrivate.startTime) +
+          getDateFromEpoch(vesting.liquidityProvision.startTime) +
           " properly",
         async () => {
           assert.equal(
-            vesting.seedAndPrivate.startTime,
+            vesting.liquidityProvision.startTime,
             await instance.start()
           );
         }
@@ -159,17 +158,17 @@ contract("HIDLiquidityProvision", (accounts) => {
 
       it(
         "should be able to set benefiricay properly " +
-          vesting.seedAndPrivate.beneficiary +
+          vesting.liquidityProvision.beneficiary +
           "  properly",
         async () => {
           assert.equal(
-            vesting.seedAndPrivate.beneficiary,
+            vesting.liquidityProvision.beneficiary,
             await instance.beneficiary()
           );
         }
       );
     });
-    return;
+    
 
     // verify all vesting schedules;  unlocktime and unlockpercentage
     describe("Test vesting schedules", async () => {
@@ -178,12 +177,14 @@ contract("HIDLiquidityProvision", (accounts) => {
       }
     });
 
+    return;
+
     describe("Test fund release process", async () => {
-      const unlockTime = expectedCliffTime + vesting.seedAndPrivate.payOutInterval;
+      const unlockTime = expectedCliffTime + vesting.liquidityProvision.payOutInterval;
       
       const iminDelay = 60;
       describe("Release funds during cliff @ " + getDateFromEpoch(expectedCliffTime), async () =>{
-        let delayInterval = (vesting.seedAndPrivate.cliffDuration - iminDelay) * MILLISECONDS;
+        let delayInterval = (vesting.liquidityProvision.cliffDuration - iminDelay) * MILLISECONDS;
         // console.log(delayInterval)
         delay(delayInterval);
         it("beneficiary should NOT be able to release fund during cliff ", async () => {
@@ -252,10 +253,10 @@ contract("HIDLiquidityProvision", (accounts) => {
       // return;
       // Releasing rest of funds  
       for (i = 1; i < expectedNumberOfIntervals; i++) {
-        const unlockTime = expectedCliffTime + i * vesting.seedAndPrivate.payOutInterval;
+        const unlockTime = expectedCliffTime + i * vesting.liquidityProvision.payOutInterval;
       
         describe(`Release funs for round ${i + 1}: @ ${getDateFromEpoch(unlockTime)}`, async () => {
-          let delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
+          let delayInterval = vesting.liquidityProvision.payOutInterval  * MILLISECONDS;
           delay(delayInterval);
 
           it(`beneficiary should be able to release at time`, async () => {

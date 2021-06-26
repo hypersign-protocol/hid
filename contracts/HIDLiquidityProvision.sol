@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "../lib/HIDVesting.sol";
+import "./HIDVesting.sol";
 
 
 contract HIDLiquidityProvision is HIDVesting {

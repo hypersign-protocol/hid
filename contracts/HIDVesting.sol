@@ -38,7 +38,7 @@ contract HIDVesting is Ownable {
 
     uint256 PERCENTAGE_MULTIPLIER = 100;
     uint256 totalReleasedAmount = 0;
-
+    Vesting[] tempVestings; // temporary variable to push vs into Vesting.vestingSchedules
     Vesting vestingData;
 
     /**
@@ -91,11 +91,14 @@ contract HIDVesting is Ownable {
         uint256 st = _startTime + _cliffDuration;
 
         // Prepare vesting schedule list
+        vestingData = tempVestings.push();
         for (uint256 i = 0; i < numberOfPayouts; i++) {
-            vestingData.vestingSchedules[i] = VestingSchedule({
+            vestingData.vestingSchedules.push(
+                VestingSchedule({
                     unlockPercentage: (i + 1) * _payOutPercentage,
                     unlockTime: st + (i * _payOutInterval)
-                });
+                })
+            );
         }
 
         vestingData.numberOfVestingPeriods = numberOfPayouts;
@@ -208,7 +211,7 @@ contract HIDVesting is Ownable {
      * @param _index index of vestingSchedules array
      */
     function getVestedAmount(uint256 _index)
-        private
+        public
         view
         returns (uint256)
     {        

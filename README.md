@@ -10,7 +10,7 @@
 
 ```bash
 sudo npm i ganache-cli -g   # Install ganachen
-ganache-cli -m <mnemonics>  # Run private blockchain network
+ganache-cli -m "alley correct gorilla file try tattoo garden horse life build reward code" -b 10  # Run private blockchain network
 ```
 
 ### Install Truffle
