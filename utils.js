@@ -9,7 +9,7 @@ const config = require("./config");
     }
 
     return (
-      d.getMonth() +
+      1 + d.getMonth() +
       "/" +
       d.getDate() +
       "/" +
