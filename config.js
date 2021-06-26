@@ -27,7 +27,7 @@ module.exports = {
             payOutPercentage : 2000, // % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
             payOutInterval : (2 * TIMEUNIT), // intervals (in seconds) at which funds will be released
             revocable : true, 
-            totalAmountToBeVested: 5100000
+            totalAmountToBeVested: 7500000		
         }
     }
 }

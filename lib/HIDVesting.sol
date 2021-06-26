@@ -18,24 +18,15 @@ contract HIDVesting is Ownable {
     // it is recommended to avoid using short time durations (less than a minute). Typical vesting schemes, with a
     // cliff period of a year and a duration of four years, are safe to use.
     using SafeERC20 for IERC20;
-
     IERC20 public hidToken;
 
-    event TokensReleased(address token, uint256 amount);
-    event TokenVestingRevoked(address token);
+    event TokensReleased(uint256 amount, uint256 timestamp);
 
-    // beneficiary of tokens after they are released
     address public beneficiary;
-
-    // Durations and timestamps are expressed in UNIX time, the same units as block.timestamp.
     uint256 public cliff;
     uint256 public start;
     uint256 private duration;
-
     bool private revocable;
-
-    mapping(address => uint256) private released;
-    mapping(address => bool) private _revoked;
 
     struct VestingSchedule {
         uint256 unlockTime;
@@ -46,13 +37,11 @@ contract HIDVesting is Ownable {
         VestingSchedule[] vestingSchedules;
         uint256 numberOfVestingPeriods;
         uint256 totalUnlockedAmount;
-        uint256 lastUnlockedTime;
     }
 
     uint256 PERCENTAGE_MULTIPLIER = 100;
     uint256 totalReleasedAmount = 0;
 
-    Vesting[] vestings; // only used to initialised 
     Vesting vestingData;
 
     /**
@@ -67,7 +56,7 @@ contract HIDVesting is Ownable {
     * @notice Initialises the contract with required parameters
     * @param  _token HID token contract address
     * @param  _beneficiary address of beneficiary
-    * @param  _startTime start time in seconds (epoch time)
+    * @param  _startTime start time in seconds
     * @param  _cliffDuration cliff duration in second    
     * @param  _payOutPercentage % (in multiple of 100 i.e 12.50% = 1250) funds released in each interval.
     * @param  _payOutInterval intervals (in seconds) at which funds will be released
@@ -85,9 +74,6 @@ contract HIDVesting is Ownable {
         
         require(_beneficiary != address(0), "HIDVesting: beneficiary is the zero address");
         
-        // Need to check this later .. it was not working
-        // require(_startTime  > block.timestamp, "HIDVesting: start time is before current time");
-
         require(_payOutInterval > 0, "HIDVesting: payout interval is 0");
 
         require(_payOutInterval > 0, "HIDVesting: payout interval is 0");
@@ -100,28 +86,23 @@ contract HIDVesting is Ownable {
         require(_cliffDuration <= _payOutInterval, "HIDVesting: cliff is longer than payout interval");
         
         /////Preparing vesting schedule
-        // Calcualting in how many intervals the tokens will be unlocked
-        
-        // WARNING: _payOutPercentage should be even number, otherwise it might wrong calcualtion
+
+        // Calcualting in how many intervals the tokens will be unlocked        
         uint256 numberOfPayouts = (100 * PERCENTAGE_MULTIPLIER) / _payOutPercentage;
         
         // Get total time before the unlock starts
         uint256 st = _startTime + _cliffDuration;
 
         // Prepare vesting schedule list
-        vestingData = vestings.push();
         for (uint256 i = 0; i < numberOfPayouts; i++) {
-            vestingData.vestingSchedules.push(
-                VestingSchedule({
+            vestingData.vestingSchedules[i] = VestingSchedule({
                     unlockPercentage: (i + 1) * _payOutPercentage,
                     unlockTime: st + (i * _payOutInterval)
-                })
-            );
+                });
         }
 
         vestingData.numberOfVestingPeriods = numberOfPayouts;
-        vestingData.totalUnlockedAmount = 0;
-        vestingData.lastUnlockedTime = 0;        
+        vestingData.totalUnlockedAmount = 0;        
 
         start = _startTime;
         cliff = start + _cliffDuration;
@@ -158,7 +139,6 @@ contract HIDVesting is Ownable {
         view
         returns (
             uint256,
-            uint256,
             uint256
         )
     {
@@ -166,8 +146,7 @@ contract HIDVesting is Ownable {
             vestingData
                 .numberOfVestingPeriods,
             vestingData
-                .totalUnlockedAmount,
-            vestingData.lastUnlockedTime
+                .totalUnlockedAmount
         );
     }
 
@@ -191,28 +170,28 @@ contract HIDVesting is Ownable {
      * @notice Releases funds to the beneficiary
      */
     function release() public onlyBeneficiary {
-        //
         require(
             block.timestamp > cliff,
             "HIDVesting: No funds can be released during cliff period"
         );
 
-        Vesting storage v = vestingData;
-
-       
-
+        // calcualting installment number
         uint256 index =  (block.timestamp - cliff) / duration;
         
-
         uint256 unreleased = getReleasableAmount(index);
 
         require(unreleased > 0, "HIDVesting: no tokens are due");
 
-        v.lastUnlockedTime = v.vestingSchedules[index].unlockTime;
+        Vesting storage v = vestingData;
         v.totalUnlockedAmount += unreleased;
+        
         totalReleasedAmount += unreleased;
 
+        // Transfer tokens
         hidToken.safeTransfer(beneficiary, unreleased);
+
+        // Raising event
+        emit TokensReleased(unreleased, block.timestamp);
     }
 
     /**
@@ -232,7 +211,7 @@ contract HIDVesting is Ownable {
      * @param _index index of vestingSchedules array
      */
     function getVestedAmount(uint256 _index)
-        public
+        private
         view
         returns (uint256)
     {        
