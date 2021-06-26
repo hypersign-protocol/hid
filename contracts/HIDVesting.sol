@@ -127,6 +127,7 @@ contract HIDVesting is Ownable {
         cliff = start + _cliffDuration;
         hidToken = _token;
         beneficiary = _beneficiary;
+        duration = _payOutInterval;
 
         // Need to use this later
         revocable = _revocable;
@@ -198,27 +199,10 @@ contract HIDVesting is Ownable {
 
         Vesting storage v = vestingData;
 
-        // Figure out the slot : index of vesting schedule
-        uint256 index;
+       
+
+        uint256 index =  (block.timestamp - cliff) / duration;
         
-        if (v.lastUnlockedTime == 0) {
-            // Release tokens for first slot
-            index = 0;
-        } else if( block.timestamp >= v.vestingSchedules[ v.numberOfVestingPeriods - 1].unlockTime ){
-            // Release all tokens after completing all vesting periods
-            index = v.numberOfVestingPeriods - 1;
-        } else {
-            // Releae tokes between slot 2 to last - 1;
-            for (uint256 i = 1; i < v.numberOfVestingPeriods; i++) {
-                if (
-                    block.timestamp > v.lastUnlockedTime &&
-                    block.timestamp <= v.vestingSchedules[i].unlockTime
-                ) {
-                    index = i;
-                    break;
-                }
-            }
-        }
 
         uint256 unreleased = getReleasableAmount(index);
 
