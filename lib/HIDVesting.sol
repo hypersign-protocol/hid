@@ -7,16 +7,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
- * @title TokenVesting
- * @dev A token holder contract that can release its token balance gradually like a
- * typical vesting scheme, with a cliff and vesting period. Optionally revocable by the
- * owner.
+ * @title HID Vesting factory contract.
+ * @dev A token holder contract that can release its token balance periodically
+ * as per token economy. 
+ * This is modified version of Openzeppelin's Vesting contract
  */
 contract HIDVesting is Ownable {
-    // The vesting schedule is time-based (i.e. using block timestamps as opposed to e.g. block numbers), and is
-    // therefore sensitive to timestamp manipulation (which is something miners can do, to a certain degree). Therefore,
-    // it is recommended to avoid using short time durations (less than a minute). Typical vesting schemes, with a
-    // cliff period of a year and a duration of four years, are safe to use.
+    // This 
     using SafeERC20 for IERC20;
     IERC20 public hidToken;
 
@@ -83,7 +80,7 @@ contract HIDVesting is Ownable {
         require(_payOutPercentage <= (100 * PERCENTAGE_MULTIPLIER), "HIDVesting: payout percentage is more than 100%");
 
         // this I need to find out why it is required. It was copied fromm Zepplin vest contract
-        require(_cliffDuration <= _payOutInterval, "HIDVesting: cliff is longer than payout interval");
+        // require(_cliffDuration <= _payOutInterval, "HIDVesting: cliff is longer than payout interval");
         
         /////Preparing vesting schedule
 

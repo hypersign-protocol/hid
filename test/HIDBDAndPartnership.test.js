@@ -1,4 +1,4 @@
-const HIDVesting = artifacts.require("HIDSeedAndPrivateInvestors");
+const HIDVesting = artifacts.require("HIDBDAndPartnership");
 const HID = artifacts.require("HID");
 const config = require("../config");
 const BigNumber = require("bignumber.js");
@@ -7,12 +7,12 @@ const { vesting } = config;
 const {getDateFromEpoch, convertToken} = require("../utils");
 
 
-contract("HIDSeedAndPrivateInvestors", (accounts) => {
+contract("HIDBDAndPartnership", (accounts) => {
   const admin = accounts[0];
   const PERCENTAGE_MULTIPLIER = 100; // to handle float types.
   const MILLIONS = 1000000;
   const MILLISECONDS = 1000;
-  const seedAndPrivateInvestorAccount = accounts[1];
+  const seedAndPrivateInvestorAccount = accounts[5];
 
   console.log(seedAndPrivateInvestorAccount);
   console.log({
@@ -176,6 +176,8 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
         itShouldVerifyVestingSchedule(i);
       }
     });
+
+    return;
 
     describe("Test fund release process", async () => {
       const unlockTime = expectedCliffTime + vesting.seedAndPrivate.payOutInterval;
