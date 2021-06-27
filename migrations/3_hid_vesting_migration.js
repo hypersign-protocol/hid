@@ -16,46 +16,41 @@ module.exports = function(deployer) {
         seedAndPrivate.startTime,
         seedAndPrivate.cliffDuration,
         seedAndPrivate.payOutPercentage,
-        seedAndPrivate.payOutInterval,
-        seedAndPrivate.revocable);
-        deployer.deploy(
-            HIDLiquidityProvision,
-            HID.address,
-            liquidityProvision.beneficiary,
-            liquidityProvision.startTime,
-            liquidityProvision.cliffDuration,
-            liquidityProvision.payOutPercentage,
-            liquidityProvision.payOutInterval,
-            liquidityProvision.revocable);
+        seedAndPrivate.payOutInterval);
+    deployer.deploy(
+        HIDLiquidityProvision,
+        HID.address,
+        liquidityProvision.beneficiary,
+        liquidityProvision.startTime,
+        liquidityProvision.cliffDuration,
+        liquidityProvision.payOutPercentage,
+        liquidityProvision.payOutInterval);
+
+    deployer.deploy(
+        HIDTeamAndAdvisory,
+        HID.address,
+        teamAndAdvisory.beneficiary,
+        teamAndAdvisory.startTime,
+        teamAndAdvisory.cliffDuration,
+        teamAndAdvisory.payOutPercentage,
+        teamAndAdvisory.payOutInterval);
+
+    deployer.deploy(
+        HIDReserveFunds,
+        HID.address,
+        reserveFunds.beneficiary,
+        reserveFunds.startTime,
+        reserveFunds.cliffDuration,
+        reserveFunds.payOutPercentage,
+        reserveFunds.payOutInterval);
     
-        deployer.deploy(
-            HIDTeamAndAdvisory,
-            HID.address,
-            teamAndAdvisory.beneficiary,
-            teamAndAdvisory.startTime,
-            teamAndAdvisory.cliffDuration,
-            teamAndAdvisory.payOutPercentage,
-            teamAndAdvisory.payOutInterval,
-            teamAndAdvisory.revocable);
-    
-        deployer.deploy(
-            HIDReserveFunds,
-            HID.address,
-            reserveFunds.beneficiary,
-            reserveFunds.startTime,
-            reserveFunds.cliffDuration,
-            reserveFunds.payOutPercentage,
-            reserveFunds.payOutInterval,
-            reserveFunds.revocable);
-        
-        deployer.deploy(
-            HIDBDAndPartnership,
-            HID.address,
-            bdAndPartnerShip.beneficiary,
-            bdAndPartnerShip.startTime,
-            bdAndPartnerShip.cliffDuration,
-            bdAndPartnerShip.payOutPercentage,
-            bdAndPartnerShip.payOutInterval,
-            bdAndPartnerShip.revocable);
+    deployer.deploy(
+        HIDBDAndPartnership,
+        HID.address,
+        bdAndPartnerShip.beneficiary,
+        bdAndPartnerShip.startTime,
+        bdAndPartnerShip.cliffDuration,
+        bdAndPartnerShip.payOutPercentage,
+        bdAndPartnerShip.payOutInterval);
 };
 

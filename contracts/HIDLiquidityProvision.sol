@@ -12,16 +12,14 @@ contract HIDLiquidityProvision is HIDVesting {
             uint256 _startTime,
             uint256 _cliffDuration,
             uint256 _payOutPercentage,
-            uint256 _payOutInterval,
-            bool    _revocable
+            uint256 _payOutInterval
         )   HIDVesting(
                 _token,
                 _beneficiary,
                 _startTime,
                 _cliffDuration,
                 _payOutPercentage,
-                _payOutInterval,
-                _revocable
+                _payOutInterval
             )
             {}
 }

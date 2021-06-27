@@ -183,7 +183,7 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
       
       const iminDelay = 60;
       describe("Release funds during cliff @ " + getDateFromEpoch(expectedCliffTime), async () =>{
-        let delayInterval = (vesting.seedAndPrivate.cliffDuration - iminDelay) * MILLISECONDS;
+        let delayInterval = (vesting.seedAndPrivate.cliffDuration - (3* iminDelay)) * MILLISECONDS;
         // console.log(delayInterval)
         delay(delayInterval);
         it("beneficiary should NOT be able to release fund during cliff ", async () => {
