@@ -4,10 +4,11 @@ const HIDLiquidityProvision = artifacts.require("HIDLiquidityProvision");
 const HIDReserveFunds = artifacts.require("HIDReserveFunds");
 const HIDTeamAndAdvisory = artifacts.require("HIDTeamAndAdvisory");
 const HIDBDAndPartnership = artifacts.require("HIDBDAndPartnership");
+const HIDNetOpsMining = artifacts.require("HIDNetOpsMining");
 const { vesting } = require('../config');
 
 module.exports = function(deployer) {
-    const { seedAndPrivate, liquidityProvision, teamAndAdvisory, reserveFunds, bdAndPartnerShip } = vesting;
+    const { seedAndPrivate, liquidityProvision, teamAndAdvisory, reserveFunds, bdAndPartnerShip, netOpsMining } = vesting;
     
     deployer.deploy(
         HIDSeedAndPrivateInvestors,
@@ -52,5 +53,14 @@ module.exports = function(deployer) {
         bdAndPartnerShip.cliffDuration,
         bdAndPartnerShip.payOutPercentage,
         bdAndPartnerShip.payOutInterval);
+
+    deployer.deploy(
+        HIDNetOpsMining,
+        HID.address,
+        netOpsMining.beneficiary,
+        netOpsMining.startTime,
+        netOpsMining.cliffDuration,
+        netOpsMining.payOutPercentage,
+        netOpsMining.payOutInterval);
 };
 

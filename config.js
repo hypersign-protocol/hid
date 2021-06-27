@@ -4,6 +4,10 @@ const MINUTE = 60;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 const MONTH = 30 * DAY;
+const WEEK = 7 * DAY;
+const YEAR = 52 * WEEK;
+const HALF_YEAR = 26 * WEEK;
+const QUATER = 13 * WEEK;
 
 const accounts =  [
     "0x9A74c9c5aDCEAC0dD97903bb2aF66F1E8Eec9bB9",
@@ -14,58 +18,67 @@ const accounts =  [
     "0xf8Eec495d69D958F1Ecd5F27F688d47B173f0a9A",
     "0xb8B7d0121C34b0331Cf223F29e2984470BF99dE5"] //web3.eth.getAccounts();
 
-// const startTime = 1623260972;
-const startTime = Math.ceil((new Date().getTime()) / 1000)
+const startTime = 1623260972; // 9 June
+// const startTime = Math.ceil((new Date().getTime()) / 1000)
 
 const vesting = {
     seedAndPrivate : {
         token : "", 
         beneficiary : accounts[1],
         startTime :  startTime,    
-        cliffDuration : 5 * MINUTE, 
-        payOutPercentage : 2000, 
-        payOutInterval : 3 * MINUTE, 
+        cliffDuration : 2 * MONTH, 
+        payOutPercentage : 1000, 
+        payOutInterval : MONTH, 
         totalAmountToBeVested: 5100000
     },
         teamAndAdvisory : {
         token : "", 
         beneficiary : accounts[2], 
         startTime :  startTime,    
-        cliffDuration : 6 * MONTH, 
+        cliffDuration : HALF_YEAR, 
         payOutPercentage : 2000, 
-        payOutInterval : 6 * MONTH, 
+        payOutInterval : HALF_YEAR, 
         totalAmountToBeVested: 7500000		
     },
     reserveFunds : {
         token : "", 
         beneficiary :  accounts[3], 
         startTime :  startTime,    
-        cliffDuration : 12 * MONTH, 
+        cliffDuration : YEAR, 
         payOutPercentage : 2000, 
-        payOutInterval : 6 * MONTH, 
+        payOutInterval : QUATER, 
         totalAmountToBeVested: 3750000		
     },
     liquidityProvision : {
         token : "", 
         beneficiary : accounts[4], 
         startTime :  startTime,    
-        cliffDuration : 6 * MONTH, 
+        cliffDuration : HALF_YEAR, 
         payOutPercentage : 5000, 
-        payOutInterval : 6 * MONTH, 
-        totalAmountToBeVested: 4000000		
+        payOutInterval : HALF_YEAR, 
+        totalAmountToBeVested: 2000000		
     },
     bdAndPartnerShip : {
         token : "", 
         beneficiary : accounts[5], 
         startTime :  startTime,    
-        cliffDuration : 3 * MONTH, 
+        cliffDuration : QUATER, 
         payOutPercentage : 1000, 
-        payOutInterval : 3 * MONTH, 
+        payOutInterval : QUATER, 
         totalAmountToBeVested: 5210000		
+    },
+    netOpsMining : {
+        token : "", 
+        beneficiary : accounts[6], 
+        startTime :  startTime,    
+        cliffDuration : 6 * QUATER, 
+        payOutPercentage : 10000, 
+        payOutInterval : 1 * MONTH, 
+        totalAmountToBeVested: 16000000		
     }
 }
 
-// console.log(vesting)
+console.log(vesting)
 module.exports = {
     TOTAL_SUPPLY: 50000000,
     TOKEN_NAME: "Hypersign Identity Token",
