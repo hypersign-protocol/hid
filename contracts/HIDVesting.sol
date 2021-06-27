@@ -4,13 +4,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title HID simple vesting contract.
  * @dev A token holder contract that can release its token balance periodically
  * to beneficiary
  */
-contract HIDVesting {
+contract HIDVesting is Ownable{
     
     using SafeERC20 for IERC20;
 
@@ -19,6 +20,9 @@ contract HIDVesting {
 
     // emit event when token is released
     event TokensReleased(uint256 amount, uint256 timestamp);
+    
+    // emit even when token is revoked by owner
+    event TokensRevoked(uint256 amount, uint256 timestamp);
 
     // beneficiary account
     address private beneficiary;
@@ -49,6 +53,10 @@ contract HIDVesting {
     uint256 totalReleasedAmount = 0;
     
     VestingInfo vestingInfo;
+    
+    // has the contract been revoked by owner
+    bool private hasRevoked;
+    
     
     /**
      * @notice Only allow calls from the beneficiary of the vesting contract
@@ -109,6 +117,7 @@ contract HIDVesting {
         hidToken = _token;
         beneficiary = _beneficiary;
         payOutInterval = _payOutInterval;
+        hasRevoked = false;
 
     }
 
@@ -193,6 +202,8 @@ contract HIDVesting {
             block.timestamp > cliff,
             "HIDVesting: No funds can be released during cliff period"
         );
+        
+        require(!hasRevoked, "HIDVesting: has already been revoked");
 
         // calcualting installment number
         uint256 index =  (block.timestamp - cliff) / payOutInterval;
@@ -240,4 +251,21 @@ contract HIDVesting {
             (totalBalance * vestingInfo.vestingSchedules[_index].unlockPercentage) /
             (100 * PERCENTAGE_MULTIPLIER);
     }
+    
+    function revoke() public onlyOwner {
+        require(!hasRevoked, "HIDVesting: has already been revoked");
+        
+        uint256 currentBalance = getBalance();
+        
+        require(currentBalance > 0, "HIDVesting: No tokens left to revoke");
+        
+        hasRevoked = true;
+        
+        // Transfer to owner
+        hidToken.safeTransfer(owner(), currentBalance);
+
+        emit TokensRevoked(currentBalance, block.timestamp);
+        
+    }
+    
 }

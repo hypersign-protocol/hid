@@ -22,22 +22,13 @@ const startTime = 1623260972; // 9 June
 // const startTime = Math.ceil((new Date().getTime()) / 1000)
 
 const vesting = {
-    // seedAndPrivate : {
-    //     token : "", 
-    //     beneficiary : accounts[1],
-    //     startTime :  startTime,    
-    //     cliffDuration : 2 * MONTH, 
-    //     payOutPercentage : 1000, 
-    //     payOutInterval : MONTH, 
-    //     totalAmountToBeVested: 5100000
-    // },
     seedAndPrivate : {
         token : "", 
         beneficiary : accounts[1],
         startTime :  startTime,    
-        cliffDuration : 3 * MINUTE, 
-        payOutPercentage : 2000, 
-        payOutInterval : 5 * MINUTE, 
+        cliffDuration : 2 * MONTH, 
+        payOutPercentage : 1000, 
+        payOutInterval : MONTH, 
         totalAmountToBeVested: 5100000
     },
         teamAndAdvisory : {

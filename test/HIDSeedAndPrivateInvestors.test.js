@@ -176,7 +176,7 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
         itShouldVerifyVestingSchedule(i);
       }
     });
-    return;
+    
 
     describe("Test fund release process", async () => {
       const unlockTime = expectedCliffTime + vesting.seedAndPrivate.payOutInterval;
@@ -269,9 +269,27 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
               ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
               "Amount could not tranfered to beneficiary"
             );
-            
           });
         });
+
+        // revoke the contract 
+        if(i = 2){
+
+          it(`owner should be able to revoke `, async () => {
+            
+            const res = await instance.revoke();
+            
+            assert.equal(
+              1,
+              result.spInvestorBalance_after.comparedTo(
+                result.spInvestorBalance_before
+              ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+              "Amount could not tranfered to beneficiary"
+            );
+            
+          });
+
+        }
       }
     });
   });
