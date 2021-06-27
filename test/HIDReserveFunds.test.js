@@ -145,7 +145,7 @@ contract("HIDReserveFunds", (accounts) => {
         async () => {
           assert.equal(
             vesting.reserveFunds.startTime,
-            await instance.start()
+            await instance.getStart()
           );
         }
       );
@@ -153,7 +153,7 @@ contract("HIDReserveFunds", (accounts) => {
       it(`should be able to set clifftime ${getDateFromEpoch(
         expectedCliffTime
       )} properly`, async () => {
-        assert.equal(expectedCliffTime, await instance.cliff());
+        assert.equal(expectedCliffTime, await instance.getCliff());
       });
 
       it(
@@ -163,7 +163,7 @@ contract("HIDReserveFunds", (accounts) => {
         async () => {
           assert.equal(
             vesting.reserveFunds.beneficiary,
-            await instance.beneficiary()
+            await instance.getBeneficiary()
           );
         }
       );

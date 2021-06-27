@@ -63,6 +63,7 @@ truffle migrate --network mainnet
 
 ```bash
 truffle test
+truffle test --show-events
 ```
 
 ### Report

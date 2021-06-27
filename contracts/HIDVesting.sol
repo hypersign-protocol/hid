@@ -15,19 +15,19 @@ contract HIDVesting {
     using SafeERC20 for IERC20;
 
     // Hypersign identity token interface
-    IERC20 public hidToken;
+    IERC20 private hidToken;
 
     // emit event when token is released
     event TokensReleased(uint256 amount, uint256 timestamp);
 
     // beneficiary account
-    address public beneficiary;
+    address private beneficiary;
     
     // cliff time
-    uint256 public cliff;
+    uint256 private cliff;
 
     // start time
-    uint256 public start;
+    uint256 private start;
 
     // interval at which token will be released
     uint256 private payOutInterval;
@@ -110,6 +110,27 @@ contract HIDVesting {
         beneficiary = _beneficiary;
         payOutInterval = _payOutInterval;
 
+    }
+
+    /**
+     * @return the beneficiary of the tokens.
+     */
+    function getBeneficiary() public view returns (address) {
+        return beneficiary;
+    }
+
+    /**
+     * @return cliff end date
+     */
+    function getCliff() public view returns (uint256) {
+        return cliff;
+    }
+
+    /**
+     * @return start time or TGE date
+     */
+    function getStart() public view returns (uint256) {
+        return start;
     }
 
     /**
