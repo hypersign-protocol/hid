@@ -61,9 +61,21 @@ truffle migrate --network mainnet
 
 ## Testing
 
+**Run all tests**
+
 ```bash
 truffle test
+```
+**Run all tests and show events**
+
+```bash
 truffle test --show-events
+```
+
+**Run specific test**
+
+```bash
+truffle test <test_file_path> #  truffle test ./test/HIDSeedAndPrivateInvestors.test.js
 ```
 
 ### Report

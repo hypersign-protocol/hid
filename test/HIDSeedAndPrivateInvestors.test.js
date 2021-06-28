@@ -244,53 +244,92 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
             console.log(e)
           }
         })
-      })      
+      })  
       
+      describe("Release funds by owner & then try with bene" + getDateFromEpoch(expectedCliffTime), () => {
+        let unlockTime = expectedCliffTime + 1 * vesting.seedAndPrivate.payOutInterval;
+        delay(unlockTime);
+        it("beneficiary should be able to release fund for round  2", async () => {
+          console.log(`Funds for round 2 released @ ${getDateFromEpoch("now")}`);
+          const result = await releaseFunds();
+          assert.equal(
+                    1,
+                    result.spInvestorBalance_after.comparedTo(
+                      result.spInvestorBalance_before
+                    ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                    "Amount could not tranfered to beneficiary"
+              );
+          
+        })
 
-      
-
-      // return;
-      // Releasing rest of funds  
-      for (i = 1; i < expectedNumberOfIntervals; i++) {
-        const unlockTime = expectedCliffTime + i * vesting.seedAndPrivate.payOutInterval;
-      
-        describe(`Release funs for round ${i + 1}: @ ${getDateFromEpoch(unlockTime)}`, async () => {
-          let delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
-          delay(delayInterval);
-
-          it(`beneficiary should be able to release at time`, async () => {
-            console.log(`Funds for round ${i} released @ ${getDateFromEpoch("now")}`);
-            const result = await releaseFunds();
-            console.log(result);
+        it(`owner should be able to revoke`, async () => {
+          try{
+            const owner_before = BigNumber(
+              await tokenInstance.balanceOf(admin)
+            );
+            const res = await instance.revoke();
+            const owner_after = BigNumber(
+              await tokenInstance.balanceOf(admin)
+            );
             assert.equal(
               1,
-              result.spInvestorBalance_after.comparedTo(
-                result.spInvestorBalance_before
-              ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
-              "Amount could not tranfered to beneficiary"
+              owner_after.comparedTo(
+                owner_before
+              ), 
+              "Amount could not tranfered owner"
             );
-          });
+          }catch(e){
+            console.log(e)
+          }
+          
         });
 
-        // revoke the contract 
-        if(i = 2){
-
-          it(`owner should be able to revoke `, async () => {
-            
-            const res = await instance.revoke();
-            
+        // unlockTime = expectedCliffTime + 1 * vesting.seedAndPrivate.payOutInterval;
+        // delay(unlockTime);
+        it("beneficiary should NOT be able to release fund for round  3 since it is revoked", async () => {
+          try{
+            console.log(getDateFromEpoch("now"));
+            const result = await releaseFunds();
             assert.equal(
-              1,
-              result.spInvestorBalance_after.comparedTo(
-                result.spInvestorBalance_before
-              ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
-              "Amount could not tranfered to beneficiary"
-            );
-            
-          });
+                      1,
+                      result.spInvestorBalance_after.comparedTo(
+                        result.spInvestorBalance_before
+                      ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+                      "Amount could not tranfered to beneficiary"
+                );
+          }catch(e){
+            console.log(e)
+          }
+        })
+      })  
+      
 
-        }
-      }
+
+      
+      return;
+      // Releasing rest of funds  
+      for (i = 1; i < expectedNumberOfIntervals; i++) {
+      const unlockTime = expectedCliffTime + i * vesting.seedAndPrivate.payOutInterval;
+    
+      describe(`Release funs for round ${i + 1}: @ ${getDateFromEpoch(unlockTime)}`, async () => {
+        let delayInterval = vesting.seedAndPrivate.payOutInterval  * MILLISECONDS;
+        delay(delayInterval);
+
+        it(`beneficiary should be able to release at time`, async () => {
+          console.log(`Funds for round ${i} released @ ${getDateFromEpoch("now")}`);
+          const result = await releaseFunds();
+          console.log(result);
+          assert.equal(
+            1,
+            result.spInvestorBalance_after.comparedTo(
+              result.spInvestorBalance_before
+            ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+            "Amount could not tranfered to beneficiary"
+          );
+        });
+      });
+
+    }
     });
   });
 });

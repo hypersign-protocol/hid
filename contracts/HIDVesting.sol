@@ -252,6 +252,9 @@ contract HIDVesting is Ownable{
             (100 * PERCENTAGE_MULTIPLIER);
     }
     
+    /**
+     * @notice Emergency revoke 
+     */
     function revoke() public onlyOwner {
         require(!hasRevoked, "HIDVesting: has already been revoked");
         
