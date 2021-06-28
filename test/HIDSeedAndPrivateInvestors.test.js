@@ -247,8 +247,7 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
       })  
       
       describe("Release funds by owner & then try with bene" + getDateFromEpoch(expectedCliffTime), () => {
-        let unlockTime = expectedCliffTime + 1 * vesting.seedAndPrivate.payOutInterval;
-        delay(unlockTime);
+        delay(vesting.seedAndPrivate.payOutInterval *  MILLISECONDS);
         it("beneficiary should be able to release fund for round  2", async () => {
           console.log(`Funds for round 2 released @ ${getDateFromEpoch("now")}`);
           const result = await releaseFunds();
@@ -283,9 +282,8 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
           }
           
         });
-
-        // unlockTime = expectedCliffTime + 1 * vesting.seedAndPrivate.payOutInterval;
-        // delay(unlockTime);
+ 
+        delay(vesting.seedAndPrivate.payOutInterval *  MILLISECONDS);
         it("beneficiary should NOT be able to release fund for round  3 since it is revoked", async () => {
           try{
             console.log(getDateFromEpoch("now"));
