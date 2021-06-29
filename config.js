@@ -18,26 +18,15 @@ const accounts =  [
     "0xf8Eec495d69D958F1Ecd5F27F688d47B173f0a9A",
     "0xb8B7d0121C34b0331Cf223F29e2984470BF99dE5"] //web3.eth.getAccounts();
 
-// const startTime = 1623260972; // 9 June
-const startTime = Math.ceil((new Date().getTime()) / 1000)
-
+const startTime = 1623260972; // 9 June
 const vesting = {
-    // seedAndPrivate : {
-    //     token : "", 
-    //     beneficiary : accounts[1],
-    //     startTime :  startTime,    
-    //     cliffDuration : 2 * MONTH, 
-    //     payOutPercentage : 1000, 
-    //     payOutInterval : MONTH, 
-    //     totalAmountToBeVested: 5100000
-    // },
     seedAndPrivate : {
         token : "", 
         beneficiary : accounts[1],
         startTime :  startTime,    
-        cliffDuration : 5 * MINUTE, 
-        payOutPercentage : 2000, 
-        payOutInterval : 5 * MINUTE, 
+        cliffDuration : 2 * MONTH, 
+        payOutPercentage : 1000, 
+        payOutInterval : MONTH, 
         totalAmountToBeVested: 5100000
     },
         teamAndAdvisory : {

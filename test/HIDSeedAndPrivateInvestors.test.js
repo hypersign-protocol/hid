@@ -177,7 +177,7 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
       }
     });
     
-
+return;
     describe("Test fund release process", async () => {
       const unlockTime = expectedCliffTime + vesting.seedAndPrivate.payOutInterval;
       
@@ -245,7 +245,7 @@ contract("HIDSeedAndPrivateInvestors", (accounts) => {
           }
         })
       })  
-      
+    return;
       describe("Release funds by owner & then try with bene" + getDateFromEpoch(expectedCliffTime), () => {
         delay(vesting.seedAndPrivate.payOutInterval *  MILLISECONDS);
         it("beneficiary should be able to release fund for round  2", async () => {

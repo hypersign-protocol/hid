@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 // Developed By: Hypersign Core Team
-// Vesting Contract For BD and Partnership
+// Vesting Contract For Team And Advisory
 
 pragma solidity ^0.8.0;
 
@@ -1005,8 +1005,10 @@ contract HIDVesting is Ownable{
     
 }
 
-
-contract HIDBDAndPartnership is HIDVesting {
+/**
+ * @title Vesting for team and advisory
+ */
+contract HIDTeamAndAdvisory is HIDVesting {
     constructor(
              IERC20  _token,
             address _beneficiary,
