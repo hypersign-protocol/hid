@@ -10,7 +10,7 @@
 
 ```bash
 sudo npm i ganache-cli -g   # Install ganachen
-ganache-cli -m <mnemonics>  # Run private blockchain network
+ganache-cli -m "alley correct gorilla file try tattoo garden horse life build reward code" -b 10  # Run private blockchain network
 ```
 
 ### Install Truffle
@@ -61,8 +61,21 @@ truffle migrate --network mainnet
 
 ## Testing
 
+**Run all tests**
+
 ```bash
 truffle test
+```
+**Run all tests and show events**
+
+```bash
+truffle test --show-events
+```
+
+**Run specific test**
+
+```bash
+truffle test <test_file_path> #  truffle test ./test/HIDSeedAndPrivateInvestors.test.js
 ```
 
 ### Report
@@ -73,3 +86,6 @@ truffle test
 ## Deployed Contract
 
 - At Ropsten @2021-03-02: [0x163f294318d7f38590191304a2e0a7cee6fbf92a](https://ropsten.etherscan.io/address/0x163f294318d7f38590191304a2e0a7cee6fbf92a#code)
+
+
+#
