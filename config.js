@@ -1,5 +1,3 @@
-
-
 const MINUTE = 60; 
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
@@ -29,7 +27,7 @@ const vesting = {
         payOutInterval : MONTH, 
         totalAmountToBeVested: 5100000
     },
-        teamAndAdvisory : {
+    teamAndAdvisory : {
         token : "", 
         beneficiary : accounts[2], 
         startTime :  startTime,    
@@ -73,10 +71,19 @@ const vesting = {
         payOutPercentage : 10000, 
         payOutInterval : 1 * MONTH, 
         totalAmountToBeVested: 16000000		
+    },
+    memPoolVesting : {
+        token : "", 
+        beneficiary : "0x81a32051A7c6417E79591e239869F4179429563f", 
+        startTime :  1668066344, // 9 nov    
+        cliffDuration : 1, 
+        payOutPercentage : 0833, 
+        payOutInterval : 1 * MINUTE, 
+        totalAmountToBeVested: 5000		
     }
 }
 
-console.log(vesting)
+// console.log(vesting)
 module.exports = {
     TOTAL_SUPPLY: 50000000,
     TOKEN_NAME: "Hypersign Identity Token",

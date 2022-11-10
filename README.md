@@ -49,9 +49,11 @@ truffle migrate --network development
 ### TestNet: Ropsten
 
 ```bash
-MNEMONIC=<Your seed phrase> INFURA_API_KEY=<Your Infura project key> truffle migrate --network ropsten truffle migrate --network ropsten
+MNEMONIC=<Your seed phrase> INFURA_API_KEY=<Your Infura project key> truffle migrate --network ropsten 
 ```
 
+
+MNEMONIC="alley correct gorilla file try tattoo garden horse life build reward code" INFURA_API_KEY="f15df5a5d6784e368ea34e80fc6613f8" truffle migrate --network sepolia 
 
 ### Mainnet
 

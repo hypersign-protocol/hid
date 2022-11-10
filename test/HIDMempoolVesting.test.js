@@ -1,4 +1,4 @@
-const HIDVesting = artifacts.require("HIDReserveFunds");
+const HIDVesting = artifacts.require("HIDMempoolVesting");
 const HID = artifacts.require("HID");
 const config = require("../config");
 const BigNumber = require("bignumber.js");
@@ -7,25 +7,25 @@ const { vesting } = config;
 const {getDateFromEpoch, convertToken} = require("../utils");
 
 
-contract("HIDReserveFunds", (accounts) => {
+contract("HIDMempoolVesting", (accounts) => {
   const admin = accounts[0];
   const PERCENTAGE_MULTIPLIER = 100; // to handle float types.
   const MILLIONS = 1000000;
   const MILLISECONDS = 1000;
-  const seedAndPrivateInvestorAccount = accounts[3];
+  const seedAndPrivateInvestorAccount = config.vesting.memPoolVesting.beneficiary;
 
   console.log({
     hid: HID.address,
     hidVesting: HIDVesting.address,
   });
 
-  const initalTokenBalance = vesting.reserveFunds.totalAmountToBeVested;
+  const initalTokenBalance = vesting.memPoolVesting.totalAmountToBeVested;
   const expectedNumberOfIntervals =
-    (100 * PERCENTAGE_MULTIPLIER) / vesting.reserveFunds.payOutPercentage;
+    Math.floor((100 * PERCENTAGE_MULTIPLIER) / vesting.memPoolVesting.payOutPercentage);
   const totalStartCliffAndWaitTime =
-    vesting.reserveFunds.startTime + vesting.reserveFunds.cliffDuration;
+    vesting.memPoolVesting.startTime + vesting.memPoolVesting.cliffDuration;
   const expectedCliffTime =
-    vesting.reserveFunds.startTime + vesting.reserveFunds.cliffDuration; // in secods
+    vesting.memPoolVesting.startTime + vesting.memPoolVesting.cliffDuration; // in secods
   
   const vestingContractAddress = HIDVesting.address;
 
@@ -43,9 +43,9 @@ contract("HIDReserveFunds", (accounts) => {
   function itShouldVerifyVestingSchedule(i) {
     describe(`vesting schedule for round ${i + 1}`, async () => {
       const unlockPercentage =
-        (i + 1) * vesting.reserveFunds.payOutPercentage;
+        (i + 1) * vesting.memPoolVesting.payOutPercentage;
       const unlockTime =
-        totalStartCliffAndWaitTime + i * vesting.reserveFunds.payOutInterval;
+        totalStartCliffAndWaitTime + i * vesting.memPoolVesting.payOutInterval;
       const unlockTokens = convertToken(
         (initalTokenBalance * unlockPercentage) / (100 * PERCENTAGE_MULTIPLIER)
       );
@@ -120,7 +120,7 @@ contract("HIDReserveFunds", (accounts) => {
         initalTokenBalance / MILLIONS
       }`, async () => {
         const initalTokens = convertToken(
-          vesting.reserveFunds.totalAmountToBeVested
+          vesting.memPoolVesting.totalAmountToBeVested
         );
 
         // first transfer HID to vesting contract
@@ -129,6 +129,11 @@ contract("HIDReserveFunds", (accounts) => {
         });
 
         contractBalance = BigNumber(await instance.getBalance());
+
+        console.log({
+          initalTokens: initalTokens.toString(),
+          contractBalance: contractBalance.toString()
+        })
 
         assert.equal(0, initalTokens.comparedTo(contractBalance));
       });
@@ -140,11 +145,11 @@ contract("HIDReserveFunds", (accounts) => {
 
       it(
         "should be able to set startTime " +
-          getDateFromEpoch(vesting.reserveFunds.startTime) +
+          getDateFromEpoch(vesting.memPoolVesting.startTime) +
           " properly",
         async () => {
           assert.equal(
-            vesting.reserveFunds.startTime,
+            vesting.memPoolVesting.startTime,
             await instance.getStart()
           );
         }
@@ -158,11 +163,11 @@ contract("HIDReserveFunds", (accounts) => {
 
       it(
         "should be able to set benefiricay properly " +
-          vesting.reserveFunds.beneficiary +
+          vesting.memPoolVesting.beneficiary +
           "  properly",
         async () => {
           assert.equal(
-            vesting.reserveFunds.beneficiary,
+            vesting.memPoolVesting.beneficiary,
             await instance.getBeneficiary()
           );
         }
@@ -176,85 +181,73 @@ contract("HIDReserveFunds", (accounts) => {
       }
     });
 
-    return;
+
+   
+
     describe("Test fund release process", async () => {
-      const unlockTime = expectedCliffTime + vesting.reserveFunds.payOutInterval;
+      const unlockTime = expectedCliffTime + vesting.memPoolVesting.payOutInterval;
       
-      const iminDelay = 60;
-      describe("Release funds during cliff @ " + getDateFromEpoch(expectedCliffTime), async () =>{
-        let delayInterval = (vesting.reserveFunds.cliffDuration - iminDelay) * MILLISECONDS;
-        // console.log(delayInterval)
-        delay(delayInterval);
-        it("beneficiary should NOT be able to release fund during cliff ", async () => {
-          try {
-            console.log(`Funds for cliff @ ${getDateFromEpoch("now")}`);
-            await releaseFunds();
-          } catch (e) {
-            console.log(e);
-          }
-        });
+      const iminDelay = 60; // 30sec
+      // describe("Release funds during cliff @ " + getDateFromEpoch(expectedCliffTime), async () =>{
+      //   let delayInterval = (vesting.memPoolVesting.cliffDuration - iminDelay) * MILLISECONDS;
+      //   // console.log(delayInterval)
+      //   delay(delayInterval);
+      //   it("beneficiary should NOT be able to release fund during cliff ", async () => {
+      //     try {
+      //       //console.log(`Funds for cliff @ ${getDateFromEpoch("now")}`);
+      //       await releaseFunds();
+      //     } catch (e) {
+      //       console.log(e);
+      //     }
+      //   });
   
-      })
+      // })
 
-      describe("Release funds for round 1 @" + getDateFromEpoch(expectedCliffTime), () => {
-        delay(iminDelay * MILLISECONDS);
-        it("beneficiary should be able to release fund for round  1", async () => {
-          console.log(`Funds for round 1 released @ ${getDateFromEpoch("now")}`);
-          const result = await releaseFunds();
-          assert.equal(
-                    1,
-                    result.spInvestorBalance_after.comparedTo(
-                      result.spInvestorBalance_before
-                    ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
-                    "Amount could not tranfered to beneficiary"
-              );
+      
+
+      // describe("Release funds for round 1 @" + getDateFromEpoch(expectedCliffTime), () => {
+      //   delay(iminDelay * MILLISECONDS);
+      //   it("beneficiary should be able to release fund for round  1", async () => {
+      //     //console.log(`Funds for round 1 released @ ${getDateFromEpoch("now")}`);
+      //     const result = await releaseFunds();
+      //     console.log(result);
+      //     assert.equal(
+      //               1,
+      //               result.spInvestorBalance_after.comparedTo(
+      //                 result.spInvestorBalance_before
+      //               ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+      //               "Amount could not tranfered to beneficiary"
+      //         );
           
-        })
-
-        it("beneficiary should NOT be able to release fund for round 1", async () => {
-          try{
-            console.log(getDateFromEpoch("now"));
-            const result = await releaseFunds();
-            assert.equal(
-                      1,
-                      result.spInvestorBalance_after.comparedTo(
-                        result.spInvestorBalance_before
-                      ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
-                      "Amount could not tranfered to beneficiary"
-                );
-          }catch(e){
-            console.log(e)
-          }
-        })
-
-        it("beneficiary should NOT be able to release fund for round 1", async () => {
-          try{
-            console.log(getDateFromEpoch("now"));
-            const result = await releaseFunds();
-            assert.equal(
-                      1,
-                      result.spInvestorBalance_after.comparedTo(
-                        result.spInvestorBalance_before
-                      ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
-                      "Amount could not tranfered to beneficiary"
-                );
-
-          }catch(e){
-            console.log(e)
-          }
-        })
-      })      
+      //   })
+      
+      //   it("beneficiary should NOT be able to release fund for round 1", async () => {
+      //     try{
+      //       //console.log(getDateFromEpoch("now"));
+      //       const result = await releaseFunds();
+      //       console.log(result);
+      //       assert.equal(
+      //                 1,
+      //                 result.spInvestorBalance_after.comparedTo(
+      //                   result.spInvestorBalance_before
+      //                 ), //Ref: https://mikemcl.github.io/bignumber.js/#cmp
+      //                 "Amount could not tranfered to beneficiary"
+      //           );
+      //     }catch(e){
+      //       console.log(e)
+      //     }
+      //   })
+      // })      
       
 
       
 
-      // return;
       // Releasing rest of funds  
       for (i = 1; i < expectedNumberOfIntervals; i++) {
-        const unlockTime = expectedCliffTime + i * vesting.reserveFunds.payOutInterval;
+        const unlockTime = expectedCliffTime + i * vesting.memPoolVesting.payOutInterval;
       
         describe(`Release funs for round ${i + 1}: @ ${getDateFromEpoch(unlockTime)}`, async () => {
-          let delayInterval = vesting.reserveFunds.payOutInterval  * MILLISECONDS;
+          let delayInterval = vesting.memPoolVesting.payOutInterval  * MILLISECONDS;
           delay(delayInterval);
 
           it(`beneficiary should be able to release at time`, async () => {
