@@ -87,7 +87,8 @@ truffle test <test_file_path> #  truffle test ./test/HIDSeedAndPrivateInvestors.
 
 ## Deployed Contract
 
-- At Ropsten @2021-03-02: [0x163f294318d7f38590191304a2e0a7cee6fbf92a](https://ropsten.etherscan.io/address/0x163f294318d7f38590191304a2e0a7cee6fbf92a#code)
+- https://sepolia.etherscan.io/address/0xa4Ec847Ef7bE1E0FE53047Bf90c332da88474a3E
+- https://sepolia.etherscan.io/address/0x801a3D204817390a318B2ff702D2958B90CBfB00#readContract
 
 
 #
